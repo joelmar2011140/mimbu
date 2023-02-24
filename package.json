@@ -6,22 +6,53 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:css": "postcss styles/globals.css -o public/styles/globals.css"
   },
   "dependencies": {
+    "@metamask/detect-provider": "2.0.0",
+    "@prisma/client": "4.10.1",
+    "@tremor/react": "1.8.0",
+    "@truffle/contract": "4.6.15",
     "@types/node": "18.14.1",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
+    "arrpag": "2.1.2",
+    "bcrypt": "5.1.0",
+    "easy-peasy": "5.2.0",
     "eslint": "8.34.0",
     "eslint-config-next": "13.2.1",
+    "formidable": "2.1.1",
+    "fuse.js": "6.6.2",
+    "joi": "17.8.3",
+    "moment": "2.29.4",
     "next": "13.2.1",
+    "next-connect": "0.13.0",
     "react": "18.2.0",
+    "react-countdown": "2.3.5",
     "react-dom": "18.2.0",
-    "typescript": "4.9.5"
+    "react-icons": "4.7.1",
+    "react-toastify": "9.1.1",
+    "socket.io": "4.6.1",
+    "typescript": "4.9.5",
+    "web3": "1.8.2"
   },
   "devDependencies": {
+    "@types/axios": "0.14.0",
+    "@types/bcrypt": "5.0.0",
+    "@types/formidable": "2.0.5",
+    "@types/joi": "17.2.3",
+    "@types/moment": "2.13.0",
+    "@types/react-icons": "3.0.0",
+    "@types/react-toastify": "4.1.0",
+    "@types/socket.io": "3.0.2",
+    "@types/web3": "1.2.2",
+    "autoprefixer": "10.4.13",
     "git-commit-msg-linter": "4.7.3",
     "husky": "8.0.3",
-    "lint-staged": "13.1.2"
+    "lint-staged": "13.1.2",
+    "postcss": "8.4.21",
+    "prisma": "4.10.1",
+    "tailwindcss": "3.2.7"
   }
 }
