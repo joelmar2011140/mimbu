@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "eslint --ext .ts --ext .tsx src . --fix",
+    "lint:fix": "eslint --ext .ts src . --fix",
     "truffle:migrate": "truffle migrate --network development",
     "build:css": "postcss styles/globals.css -o public/styles/globals.css"
   },
