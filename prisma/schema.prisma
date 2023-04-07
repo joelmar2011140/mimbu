@@ -54,7 +54,7 @@ model Votante {
   bilheteDeIdentidade  String     @unique
   Provincia            Provincia? @relation(fields: [provinciaIdProvincia], references: [idProvincia])
   provinciaIdProvincia String?
-  usuario              Usuario    @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  usuario              Usuario    @relation(fields: [usuarioIdUsuario], references: [idUsuario], onDelete: Cascade)
   edicoes              Edicao[]
   usuarioIdUsuario     String
 }

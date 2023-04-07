@@ -24,10 +24,7 @@ export default function FormularioVotante() {
       <p className="text-red-700">{errors.distrito ? "Insira o nome do distrito por favor" : errors.bairro ? 'Insira o nome do bairro' : null}</p>
       <Input name="rua" type="text" label="Rua" placeholder="Rua" required register={register} />
       <p className="text-red-700">{errors.rua ? "Insira o nome da rua por favor" : null}</p>
-      <div className="flex items-center justify-between flex-row">
-        <Input name="email" type="email" label="Email" placeholder="Email" required register={register} />
-        <Input name="telefone" type="tel" label="Telefone" placeholder="Telefone" required register={register} />
-      </div>
+      <Input name="email" type="email" label="Email" placeholder="Email" required register={register} />
       <p className="text-red-700">{errors.email ? "Insira o seu email por favor" : errors.telefone ? 'Insira o número de telefone' : null}</p>
       <button onClick={handleSubmit(onSubmit)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Inscrever-se</button>
     </>
