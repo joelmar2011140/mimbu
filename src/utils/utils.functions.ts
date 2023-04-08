@@ -22,3 +22,13 @@ export function verificarImagem(mimetype: string, path: string) {
     throw new ApiError('APIERROR', 'Forneça por favor uma imagem válida', 422)
   }
 }
+
+export function showPath(url: string): string | undefined {
+  const urlSplited = url.split('\\')
+  const indiceUrl = urlSplited.indexOf('uploads')
+  if (indiceUrl !== -1) {
+    const urlSerialized = urlSplited.slice(indiceUrl)
+    return urlSerialized.join('/')
+  }
+  return undefined
+}
