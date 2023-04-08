@@ -16,6 +16,13 @@ export async function listarVotantesHttp (req: NextApiRequest, res: NextApiRespo
     })
   } catch (err: any) {
     console.error(err)
+    if (err.nomeErro === 'ApiError') {
+      const erro: IErro = {
+        message: err.mensagem,
+        status: err.status
+      }
+      return res.status(erro.status).json(erro)
+    }
   }
 }
 
@@ -29,6 +36,13 @@ export async function listarUmVotanteHttp (req: NextApiRequest, res: NextApiResp
     })
   } catch (err: any) {
     console.error(err)
+    if (err.nomeErro === 'ApiError') {
+      const erro: IErro = {
+        message: err.mensagem,
+        status: err.status
+      }
+      return res.status(erro.status).json(erro)
+    }
   }
 }
 
@@ -42,6 +56,13 @@ export async function eliminarUmVotanteHttp (req: NextApiRequest, res: NextApiRe
     })
   } catch (err: any) {
     console.error(err)
+    if (err.nomeErro === 'ApiError') {
+      const erro: IErro = {
+        message: err.mensagem,
+        status: err.status
+      }
+      return res.status(erro.status).json(erro)
+    }
   }
 }
 
@@ -49,13 +70,16 @@ export async function criarVotanteHttp (req: NextApiRequest, res: NextApiRespons
   try {
     const data = await validarRegistoVotante.validateAsync(req.body)
     const response = await criarVotante(data)
-    return res.status(response.status).json({
-      message: response.message,
-      status: response.status,
-      data: response.data
-    })
+    return res.status(response.status).json(response)
   } catch (err: any) {
     console.error(err)
+    if (err.nomeErro === 'ApiError') {
+      const erro: IErro = {
+        message: err.mensagem,
+        status: err.status
+      }
+      return res.status(erro.status).json(erro)
+    }
     if (err.name === 'ValidationError') {
       for (const detalhe of err.details) {
         return res.status(400).json({

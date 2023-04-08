@@ -4,6 +4,7 @@ import { ICriarVotante } from "./votantes.types";
 import { genSalt, hash } from "bcrypt";
 import { resultadoPaginado } from "@/utils/paginacao";
 import { pesquisar } from "@/utils/filtros";
+import ApiError from "@/utils/APIError";
 
 export async function listarVotantes (pagina: number, porPagina: number, sq?: string): Promise<IResultPaginated> {
   const votantes = await prismaVotante.findMany({ include: { usuario: { select: { email: true } }, Provincia: { select: { nomeProvincia: true } }, edicoes: { select: { nomeEdicao: true, categorias: { select: { nomeCategoria: true } } } } } })
@@ -11,13 +12,10 @@ export async function listarVotantes (pagina: number, porPagina: number, sq?: st
   return listaDeVotantes
 }
 
-export async function listarUmVotante (idVotante: string): Promise<ISucesso | IErro> {
+export async function listarUmVotante (idVotante: string): Promise<ISucesso> {
   const votante = await prismaVotante.findUnique({ where: { idVotante },include: { usuario: { select: { email: true } }, Provincia: { select: { nomeProvincia: true } }, edicoes: { select: { nomeEdicao: true, categorias: { select: { nomeCategoria: true } } } } } })
   if (votante == null) {
-    return {
-      message: 'Votante não encontrado',
-      status: 404
-    }
+    throw new ApiError('ApiError', 'Votante não encontrado', 404)
   }
   return {
     message: 'Votante encontrado com sucesso',
@@ -29,12 +27,12 @@ export async function listarUmVotante (idVotante: string): Promise<ISucesso | IE
 export async function eliminarUmVotante (idVotante: string): Promise<ISucesso> {
   const votante = await prismaVotante.findUnique({ where: { idVotante },include: { usuario: { select: { email: true } }, Provincia: { select: { nomeProvincia: true } }, edicoes: { select: { nomeEdicao: true, categorias: { select: { nomeCategoria: true } } } } } })
   if (votante == null) {
-    return {
-      message: 'Votante não encontrado',
-      status: 404
-    }
+    throw new ApiError('ApiError', 'Votante não encontrado', 404)
   }
   const votanteEliminado = await prismaVotante.delete({ where: { idVotante } })
+  if (votanteEliminado == null) {
+    throw new ApiError('ApiError', 'Não foi possível eliminar este votante', 503)
+  }
   return {
     message: 'Votante eliminado com sucesso',
     status: 200,
@@ -104,10 +102,7 @@ export async function criarVotante(params: ICriarVotante): Promise<ISucesso | IE
     }
   })
   if (votante == null) {
-    return {
-      message: 'Votante não registado',
-      status: 503
-    }
+    throw new ApiError('ApiError', 'Não foi possível registar este votante', 503)
   }
   return {
     message: 'Votante registado com sucesso',
