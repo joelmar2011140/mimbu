@@ -6,7 +6,7 @@ import { pesquisar } from "@/utils/filtros";
 import { resultadoPaginado } from "@/utils/paginacao";
 import { verificarData, verificarDatas } from "@/utils/data";
 import { prismaCategorias } from "../categorias/categorias.prisma";
-import { deleteFile } from "@/utils/utils.functions";
+import { deleteFile, showPath } from "@/utils/utils.functions";
 
 export async function listarEdicoes(pagina: number, porPagina: number, sq?: string): Promise<IResultPaginated> {
   const edicoes = await prismaEdicao.findMany({ include: { categorias: { select: { nomeCategoria: true } } } })
@@ -19,6 +19,7 @@ export async function listarUmaEdicao(idEdicao: string): Promise<ISucesso> {
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se que escolheu a edição correta', 404)
   }
+  console.log(showPath(edicao.capa))
   return {
     message: 'Edição listada com sucesso',
     status: 200,
@@ -80,6 +81,9 @@ export async function atualizarEdicao(idEdicao: string, params: IAtualizarEdicao
   const edicao = await prismaEdicao.findUnique({ where: { idEdicao } })
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se por favor que escolheu a edição correta', 404)
+  }
+  if (params.capa != null) {
+    deleteFile(edicao.capa)
   }
   if (params.dataComeco != null && params.dataTermino != null) {
     verificarDatas(params.dataComeco, params.dataTermino)
