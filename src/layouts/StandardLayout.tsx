@@ -2,6 +2,7 @@ import Head from "next/head";
 import { IStandardLayout } from "@/global.types";
 import { Header } from "@/components/Header";
 import useBlockChain from "@/hooks/useBlockchain";
+import Footer from "@/components/Footer";
 
 export function StandardLayout ({ children, descricao, tituloDaPagina }: IStandardLayout) {
   const titulo: string = `Mimbu - ${tituloDaPagina}`
@@ -14,9 +15,10 @@ export function StandardLayout ({ children, descricao, tituloDaPagina }: IStanda
         <title>{titulo}</title>
       </Head>
       <Header />
-      <main>
+      <main className="min-h-screen min-w-screen border">
         { children }
       </main>
+      <Footer />
     </>
   )
 }
