@@ -30,7 +30,7 @@ model Categoria {
 model Noticias {
   idNoticia       String   @id @default(uuid())
   tituloDaNoticia String
-  dataDaNoticia   DateTime
+  dataDaNoticia   String
   imagemDaNoticia String
   conteudo        String
   createdAT       DateTime @default(now())
