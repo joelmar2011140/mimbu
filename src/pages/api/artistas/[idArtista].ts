@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
-import { registarArtistaHttp, listarArtistasHttp, listarArtistasQueParticipamHttp } from "@/services/artistas/artistas.controller";
+import { atualizarArtistaHttp, eliminarUmArtistaHttp, listarUmArtistaHttp } from "@/services/artistas/artistas.controller";
 
 const handler = nc({
   onError: (err, req: NextApiRequest, res: NextApiResponse, next) => {
@@ -11,8 +11,9 @@ const handler = nc({
     res.status(404).end("Page is not found");
   },
 })
-  .get(listarArtistasHttp)
-  .post(registarArtistaHttp)
+  .get(listarUmArtistaHttp)
+  .patch(atualizarArtistaHttp)
+  .delete(eliminarUmArtistaHttp)
 
 export const config = {
   api: {

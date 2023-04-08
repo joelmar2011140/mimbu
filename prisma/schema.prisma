@@ -70,7 +70,7 @@ model Artista {
   Provincia            Provincia? @relation(fields: [provinciaIdProvincia], references: [idProvincia])
   provinciaIdProvincia String?
   musicaIdMusica       String
-  usuario              Usuario    @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  usuario              Usuario    @relation(fields: [usuarioIdUsuario], references: [idUsuario], onDelete: Cascade)
   usuarioIdUsuario     String
   edicao               Edicao?    @relation(fields: [edicaoIdEdicao], references: [idEdicao])
   edicaoIdEdicao       String?
