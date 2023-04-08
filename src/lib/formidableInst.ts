@@ -1,8 +1,8 @@
 import formidable from "formidable";
-import { join } from "path";
+import { resolve } from "path";
 
 export const formidableInst = formidable({
-  uploadDir: join(__dirname, '..', '..', '..', '..', 'public', 'uploads'),
+  uploadDir: resolve('public', 'uploads'),
   keepExtensions: true,
   maxFiles: 1, 
   allowEmptyFiles: false
