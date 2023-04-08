@@ -14,3 +14,10 @@ export const formidableInstArtista = formidable({
   maxFiles: 1, 
   allowEmptyFiles: false
 })
+
+export const formidableInstNoticias = formidable({
+  uploadDir: resolve('public', 'uploads', 'imagensNoticias'),
+  keepExtensions: true,
+  maxFiles: 1, 
+  allowEmptyFiles: false
+})
