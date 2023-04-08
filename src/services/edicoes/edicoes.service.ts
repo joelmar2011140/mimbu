@@ -38,7 +38,7 @@ export async function eliminarUmaEdicao(idEdicao: string): Promise<ISucesso> {
   }
   deleteFile(edicaoEliminada.capa)
   return {
-    message: 'Edição listada com sucesso',
+    message: 'Edição eliminada com sucesso',
     status: 200,
     data: edicao
   }

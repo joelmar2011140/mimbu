@@ -15,6 +15,13 @@ export async function listarEdicoesHttp(req: NextApiRequest, res: NextApiRespons
     return res.status(200).json(response)
   } catch (err: any) {
     console.error(err)
+    if (err.nomeErro === 'APIERROR') {
+      const erro: IErro = {
+        message: err.mensagem,
+        status: err.status
+      }
+      return res.status(erro.status).json(erro)
+    }
   }
 }
 
@@ -25,6 +32,13 @@ export async function eliminarUmaEdicaoHttp(req: NextApiRequest, res: NextApiRes
     return res.status(response.status).json(response)
   } catch (err: any) {
     console.error(err)
+    if (err.nomeErro === 'APIERROR') {
+      const erro: IErro = {
+        message: err.mensagem,
+        status: err.status
+      }
+      return res.status(erro.status).json(erro)
+    }
   }
 }
 
@@ -35,6 +49,13 @@ export async function listarUmaEdicaoHttp(req: NextApiRequest, res: NextApiRespo
     return res.status(response.status).json(response)
   } catch (err: any) {
     console.error(err)
+    if (err.nomeErro === 'APIERROR') {
+      const erro: IErro = {
+        message: err.mensagem,
+        status: err.status
+      }
+      return res.status(erro.status).json(erro)
+    }
   }
 }
 
