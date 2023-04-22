@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-
+import React, { useEffect, useState, Suspense } from 'react';
 
 const Countdown = ({ targetDate }: any) => {
   const [timeRemaining, setTimeRemaining] = useState(getTimeRemaining());
@@ -25,9 +24,11 @@ const Countdown = ({ targetDate }: any) => {
   return (
     <div className="flex items-center">
       <div className="text-3xl font-bold mr-2">
-        {timeRemaining.days}d{' '}
-        {('0' + timeRemaining.hours).slice(-2)}:{('0' + timeRemaining.minutes).slice(-2)}:
-        {('0' + timeRemaining.seconds).slice(-2)}:{('00' + timeRemaining.milliseconds).slice(-3)}
+        <Suspense fallback>
+          {timeRemaining.days}d{' '}
+          {('0' + timeRemaining.hours).slice(-2)}:{('0' + timeRemaining.minutes).slice(-2)}:
+          {('0' + timeRemaining.seconds).slice(-2)}:{('00' + timeRemaining.milliseconds).slice(-3)}
+        </Suspense>
       </div>
       <div className="text-gray-800 font-bold">Faltam</div>
     </div>

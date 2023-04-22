@@ -115,7 +115,7 @@ export async function atualizarEdicaoHttp(req: NextApiRequest, res: NextApiRespo
         const incomingData = await validarAtualizarEdicao.validateAsync({ capa: files.capa.filepath })
         const resposta = await atualizarEdicao(idEdicao, incomingData)
         return res.status(resposta.status).json(resposta)
-      } if (files.categorias != null && files.categorias.length > 0) {
+      } if (fields.categorias != null && fields.categorias.length > 0) {
         const incomingData = await validarAtualizarEdicao.validateAsync({ categorias: JSON.parse(fields.categorias) })
         const resposta = await atualizarEdicao(idEdicao, incomingData)
         return res.status(resposta.status).json(resposta)

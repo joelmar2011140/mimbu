@@ -6,20 +6,19 @@ import { pesquisar } from "@/utils/filtros";
 import { resultadoPaginado } from "@/utils/paginacao";
 import { verificarData, verificarDatas } from "@/utils/data";
 import { prismaCategorias } from "../categorias/categorias.prisma";
-import { deleteFile, showPath } from "@/utils/utils.functions";
+import { deleteFile } from "@/utils/utils.functions";
 
 export async function listarEdicoes(pagina: number, porPagina: number, sq?: string): Promise<IResultPaginated> {
-  const edicoes = await prismaEdicao.findMany({ include: { categorias: { select: { nomeCategoria: true } } } })
+  const edicoes = await prismaEdicao.findMany({ include: { categorias: { select: { nomeCategoria: true, Artista: true } } } })
   const listaDeEdicoes = (sq != null) ? resultadoPaginado(pesquisar(edicoes, sq, ['categorias.nomeCategoria', 'nomeEdicao']), pagina, porPagina) : resultadoPaginado(edicoes, pagina, porPagina)
   return listaDeEdicoes
 }
 
 export async function listarUmaEdicao(idEdicao: string): Promise<ISucesso> {
-  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { artistas: true, categorias: true } })
+  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categorias: { select: { nomeCategoria: true, Artista: true } }, } })
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se que escolheu a edição correta', 404)
   }
-  console.log(showPath(edicao.capa))
   return {
     message: 'Edição listada com sucesso',
     status: 200,
@@ -28,7 +27,7 @@ export async function listarUmaEdicao(idEdicao: string): Promise<ISucesso> {
 }
 
 export async function eliminarUmaEdicao(idEdicao: string): Promise<ISucesso> {
-  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { artistas: true, categorias: true } })
+  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categorias: true } })
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se que escolheu a edição correta', 404)
   }

@@ -4,8 +4,8 @@ import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { FiLogIn } from "react-icons/fi";
 import { MdClose } from "react-icons/md";
-import { AiFillFacebook, AiFillTwitterSquare, AiFillInstagram, AiFillYoutube } from "react-icons/ai";
 import { useRouter } from 'next/navigation'
+import SocialMediaList from "./SocialMediaList";
 
 export function Header() {
   const roteador = useRouter()
@@ -34,60 +34,21 @@ export function Header() {
             <h1 className="text-gray-600 text-center font-bold text-4xl tracking-wide">Mimbu</h1>
           </Link>
         </div>
-        <div className="items-center hidden lg:block">
-          <ul className="flex items-center">
-            <li className="ml-4">
-              <a
-                href="https://www.facebook.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <AiFillFacebook className="h-6 w-6 text-blue-500" />
-              </a>
-            </li>
-            <li className="ml-4">
-              <a
-                href="https://twitter.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <AiFillTwitterSquare className="h-6 w-6 text-blue-400" />
-              </a>
-            </li>
-            <li className="ml-4">
-              <a
-                href="https://www.instagram.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <AiFillInstagram className="h-6 w-6 text-pink-500" />
-              </a>
-            </li>
-            <li className="ml-4">
-              <a
-                href="https://www.youtube.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <AiFillYoutube className="h-6 w-6 text-red-500" />
-              </a>
-            </li>
-          </ul>
-        </div>
+       <SocialMediaList />
       </div>
       <div className={`fixed top-16 left-0 h-full bg-white w-56 border-r border-gray-200 z-40 ${isOpen ? "block" : "hidden"} `}>
         <nav className="px-4 py-2 w-full">
           <ul className="my-10 gap-10">
             <li className="mb-2">
-              <Link href="/" className="hover:text-white font-semibold text-xl text-pink-600  w-full p-2 hover:bg-pink-600">Artistas</Link>
+              <Link href="/artistas" className="hover:text-white font-semibold text-xl text-pink-600  w-full p-2 hover:bg-pink-600">Artistas</Link>
             </li>
             <li className="mb-2">
-              <Link href="/about" className="hover:text-white font-semibold text-xl text-pink-600  w-full p-2 hover:bg-pink-600">
+              <Link href="/contacte" className="hover:text-white font-semibold text-xl text-pink-600  w-full p-2 hover:bg-pink-600">
                 Contacte-nos
               </Link>
             </li>
             <li className="mb-2">
-              <Link href="/services" className="hover:text-white font-semibold text-xl text-pink-600  w-full p-2 hover:bg-pink-600">
+              <Link href="/noticias" className="hover:text-white font-semibold text-xl text-pink-600  w-full p-2 hover:bg-pink-600">
                 Notícias
               </Link>
             </li>

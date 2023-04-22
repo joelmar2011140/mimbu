@@ -9,13 +9,12 @@ datasource db {
 
 model Edicao {
   idEdicao    String      @id @default(uuid())
-  nomeEdicao  String      @unique
+  nomeEdicao  String
   dataComeco  String      @unique
   dataTermino String      @unique
   capa        String
   categorias  Categoria[]
   votantes    Votante[]
-  artistas    Artista[]
 }
 
 model Categoria {
@@ -24,7 +23,19 @@ model Categoria {
   createdAT     DateTime  @default(now())
   updatedAT     DateTime  @updatedAt
   edicoes       Edicao[]
-  artistas      Artista[]
+  Artista       Artista[]
+  Musica        Musica[]
+}
+
+model Usuario {
+  idUsuario          String    @id @default(uuid())
+  email              String    @unique
+  senha              String
+  role               String    @default("votante")
+  genero             String?
+  enderecoBlockchain String    @unique
+  Artista            Artista[]
+  Votante            Votante[]
 }
 
 model Noticias {
@@ -37,103 +48,45 @@ model Noticias {
   updatedAT       DateTime @updatedAt
 }
 
-model Usuario {
-  idUsuario          String    @id @default(uuid())
-  email              String    @unique
-  senha              String
-  role               String    @default("votante")
-  genero             String?
-  enderecoBlockchain String    @unique
-  Artista            Artista[]
-  createdAT          DateTime  @default(now())
-  Votante            Votante[]
-}
-
-model Votante {
-  idVotante            String     @id @default(uuid())
-  bilheteDeIdentidade  String     @unique
-  Provincia            Provincia? @relation(fields: [provinciaIdProvincia], references: [idProvincia])
-  provinciaIdProvincia String?
-  usuario              Usuario    @relation(fields: [usuarioIdUsuario], references: [idUsuario], onDelete: Cascade)
-  edicoes              Edicao[]
-  usuarioIdUsuario     String
-}
-
 model Artista {
-  idArtista            String     @id @default(uuid())
-  nomeArtistico        String     @unique
-  telefone             Int        @unique
+  idArtista            String    @id @default(uuid())
+  nomeArtistico        String    @unique
+  telefone             Int       @unique
   participa            Boolean
   dataNascimento       String
   imagemPerfil         String
-  musica               Musica     @relation(fields: [musicaIdMusica], references: [idMusica])
-  Provincia            Provincia? @relation(fields: [provinciaIdProvincia], references: [idProvincia])
-  provinciaIdProvincia String?
-  musicaIdMusica       String
-  usuario              Usuario    @relation(fields: [usuarioIdUsuario], references: [idUsuario], onDelete: Cascade)
-  usuarioIdUsuario     String
-  edicao               Edicao?    @relation(fields: [edicaoIdEdicao], references: [idEdicao])
-  edicaoIdEdicao       String?
-  categoria            Categoria? @relation(fields: [categoriaIdCategoria], references: [idCategoria])
-  categoriaIdCategoria String?
+  nomeProvincia        String    @unique
+  nomeMunicipio        String    @unique
+  nomeDistrito         String    @unique
+  nomeBairro           String    @unique
+  nomeRua              String    @unique
+  categoria            Categoria @relation(fields: [categoriaIdCategoria], references: [idCategoria])
+  categoriaIdCategoria String
+  musicas              Musica[]
+  Usuario              Usuario?  @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  usuarioIdUsuario     String?
 }
 
 model Musica {
-  idMusica       String    @id @default(uuid())
-  titulo         String
-  link_musica    String
-  ano_gravacao   Int
-  generos        Genero    @relation(fields: [generoIdGenero], references: [idGenero])
-  artistas       Artista[]
-  generoIdGenero String
+  idMusica             String    @id @default(uuid())
+  titulo               String
+  link_musica          String
+  ano_gravacao         Int
+  generoMusica         String
+  artistas             Artista[]
+  categoria            Categoria @relation(fields: [categoriaIdCategoria], references: [idCategoria])
+  categoriaIdCategoria String
 }
 
-model Genero {
-  idGenero   String   @id @default(uuid())
-  nomeGenero String   @unique
-  musicas    Musica[]
-}
-
-model Provincia {
-  idProvincia   String      @id @default(uuid())
-  nomeProvincia String      @unique
-  municipios    Municipio[]
-  distritos     Distrito[]
-  votantes      Votante[]
-  artistas      Artista[]
-}
-
-model Municipio {
-  idMunicipio          String     @id @default(uuid())
-  nomeMunicipio        String     @unique
-  bairros              Bairro[]
-  Provincia            Provincia? @relation(fields: [provinciaIdProvincia], references: [idProvincia])
-  provinciaIdProvincia String?
-  distritos            Distrito[]
-}
-
-model Distrito {
-  idDistrito           String     @id @default(uuid())
-  nomeDistrito         String     @unique
-  municipio            Municipio  @relation(fields: [municipioIdMunicipio], references: [idMunicipio])
-  bairros              Bairro[]
-  Provincia            Provincia? @relation(fields: [provinciaIdProvincia], references: [idProvincia])
-  provinciaIdProvincia String?
-  municipioIdMunicipio String
-}
-
-model Bairro {
-  idBairro             String     @id @default(uuid())
-  nomeBairro           String     @unique
-  distritos            Distrito[]
-  ruas                 Rua[]
-  Municipio            Municipio? @relation(fields: [municipioIdMunicipio], references: [idMunicipio])
-  municipioIdMunicipio String?
-}
-
-model Rua {
-  idRua          String  @id @default(uuid())
-  nomeRua        String  @unique
-  Bairro         Bairro? @relation(fields: [bairroIdBairro], references: [idBairro])
-  bairroIdBairro String?
+model Votante {
+  idVotante           String   @id @default(uuid())
+  bilheteDeIdentidade String   @unique
+  nomeProvincia       String   @unique
+  nomeMunicipio       String   @unique
+  nomeDistrito        String   @unique
+  nomeBairro          String   @unique
+  nomeRua             String   @unique
+  usuario             Usuario  @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  edicoes             Edicao[]
+  usuarioIdUsuario    String
 }

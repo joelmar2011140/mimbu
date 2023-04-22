@@ -3,8 +3,9 @@ import { IStandardLayout } from "@/global.types";
 import { Header } from "@/components/Header";
 import useBlockChain from "@/hooks/useBlockchain";
 import Footer from "@/components/Footer";
+import { Suspense } from "react";
 
-export function StandardLayout ({ children, descricao, tituloDaPagina }: IStandardLayout) {
+export function StandardLayout({ children, descricao, tituloDaPagina }: IStandardLayout) {
   const titulo: string = `Mimbu - ${tituloDaPagina}`
   return (
     <>
@@ -16,14 +17,16 @@ export function StandardLayout ({ children, descricao, tituloDaPagina }: IStanda
       </Head>
       <Header />
       <main className="min-h-screen min-w-screen border">
-        { children }
+        {children}
       </main>
-      <Footer />
+      <Suspense>
+        <Footer />
+      </Suspense>
     </>
   )
 }
 
-export function LayoutForms ({ children, descricao, tituloDaPagina }: IStandardLayout) {
+export function LayoutForms({ children, descricao, tituloDaPagina }: IStandardLayout) {
   const titulo: string = `Mimbu - ${tituloDaPagina}`
   const { blockChain } = useBlockChain()
 
@@ -38,7 +41,7 @@ export function LayoutForms ({ children, descricao, tituloDaPagina }: IStandardL
         <title>{titulo}</title>
       </Head>
       <main>
-        { children }
+        {children}
       </main>
     </>
   )

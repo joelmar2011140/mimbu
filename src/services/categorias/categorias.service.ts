@@ -11,7 +11,7 @@ export async function listarCategorias (pagina: number, porPagina: number, sq?: 
   return listaDeCategorias
 }
 
-export async function listarUmaCategoria (idCategoria: string): Promise<ISucesso | IErro> {
+export async function listarUmaCategoria (idCategoria: string): Promise<ISucesso> {
   const categoria = await prismaCategorias.findUnique({ where: { idCategoria }})
   if (categoria == null) {
     throw new ApiError('ApiError', 'Categoria não encontrada', 404)
@@ -49,7 +49,7 @@ export async function atualizarUmaCategoria (idCategoria: string, params: IAtual
   }
 }
 
-export async function criarCategoria(params: ICriarCategoria): Promise<ISucesso | IErro> {
+export async function criarCategoria(params: ICriarCategoria): Promise<ISucesso> {
   const { nomeCategoria } = params
   const categoria = await prismaCategorias.create({
     data: {
