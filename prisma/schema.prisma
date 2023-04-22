@@ -13,18 +13,16 @@ model Edicao {
   dataComeco  String      @unique
   dataTermino String      @unique
   capa        String
-  categorias  Categoria[]
-  votantes    Votante[]
+  artista     Artista[]
+  votante     Votante[]
+  categoria   Categoria[]
 }
 
 model Categoria {
-  idCategoria   String    @id @default(uuid())
-  nomeCategoria String    @unique
-  createdAT     DateTime  @default(now())
-  updatedAT     DateTime  @updatedAt
-  edicoes       Edicao[]
-  Artista       Artista[]
-  Musica        Musica[]
+  idCategoria   String   @id @default(uuid())
+  nomeCategoria String   @unique
+  Edicao        Edicao[]
+  musica        Musica[]
 }
 
 model Usuario {
@@ -49,44 +47,43 @@ model Noticias {
 }
 
 model Artista {
-  idArtista            String    @id @default(uuid())
-  nomeArtistico        String    @unique
-  telefone             Int       @unique
-  participa            Boolean
-  dataNascimento       String
-  imagemPerfil         String
-  nomeProvincia        String    @unique
-  nomeMunicipio        String    @unique
-  nomeDistrito         String    @unique
-  nomeBairro           String    @unique
-  nomeRua              String    @unique
-  categoria            Categoria @relation(fields: [categoriaIdCategoria], references: [idCategoria])
-  categoriaIdCategoria String
-  musicas              Musica[]
-  Usuario              Usuario?  @relation(fields: [usuarioIdUsuario], references: [idUsuario])
-  usuarioIdUsuario     String?
+  idArtista        String   @id @default(uuid())
+  nomeArtistico    String   @unique
+  telefone         String   @unique
+  participa        Boolean
+  dataNascimento   String
+  imagemPerfil     String
+  nomeProvincia    String
+  nomeMunicipio    String
+  nomeDistrito     String
+  nomeBairro       String
+  nomeRua          String
+  Edicao           Edicao[]
+  Musica           Musica[]
+  usuario          Usuario? @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  usuarioIdUsuario String?
 }
 
 model Musica {
-  idMusica             String    @id @default(uuid())
-  titulo               String
-  link_musica          String
-  ano_gravacao         Int
-  generoMusica         String
-  artistas             Artista[]
-  categoria            Categoria @relation(fields: [categoriaIdCategoria], references: [idCategoria])
-  categoriaIdCategoria String
+  idMusica         String      @id @default(uuid())
+  titulo           String
+  link_musica      String
+  ano_gravacao     Int
+  generoMusica     String
+  artista          Artista     @relation(fields: [artistaIdArtista], references: [idArtista])
+  artistaIdArtista String
+  categoria        Categoria[] @relation()
 }
 
 model Votante {
   idVotante           String   @id @default(uuid())
   bilheteDeIdentidade String   @unique
-  nomeProvincia       String   @unique
-  nomeMunicipio       String   @unique
-  nomeDistrito        String   @unique
-  nomeBairro          String   @unique
-  nomeRua             String   @unique
-  usuario             Usuario  @relation(fields: [usuarioIdUsuario], references: [idUsuario])
-  edicoes             Edicao[]
-  usuarioIdUsuario    String
+  nomeProvincia       String
+  nomeMunicipio       String
+  nomeDistrito        String
+  nomeBairro          String
+  nomeRua             String
+  Edicao              Edicao[]
+  usuario             Usuario? @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  usuarioIdUsuario    String?
 }

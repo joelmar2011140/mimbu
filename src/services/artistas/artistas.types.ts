@@ -21,3 +21,15 @@ export interface IAdicionarArtista {
 }
 
 export interface IAtualizarArtista extends Partial<IAdicionarArtista> {}
+export interface IIngressarEdicao {
+  titulo: string
+  link_musica: string
+  ano_gravacao: number
+  nomeGenero: string
+  idEdicao: string
+  idCategoria: string
+}
+export interface ISairEdicao {
+  idEdicao: string
+  idCategoria: string
+}

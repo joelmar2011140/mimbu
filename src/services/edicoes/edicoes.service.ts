@@ -9,13 +9,13 @@ import { prismaCategorias } from "../categorias/categorias.prisma";
 import { deleteFile } from "@/utils/utils.functions";
 
 export async function listarEdicoes(pagina: number, porPagina: number, sq?: string): Promise<IResultPaginated> {
-  const edicoes = await prismaEdicao.findMany({ include: { categorias: { select: { nomeCategoria: true, Artista: true } } } })
+  const edicoes = await prismaEdicao.findMany({ include: { categoria: { select: { nomeCategoria: true } } } })
   const listaDeEdicoes = (sq != null) ? resultadoPaginado(pesquisar(edicoes, sq, ['categorias.nomeCategoria', 'nomeEdicao']), pagina, porPagina) : resultadoPaginado(edicoes, pagina, porPagina)
   return listaDeEdicoes
 }
 
 export async function listarUmaEdicao(idEdicao: string): Promise<ISucesso> {
-  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categorias: { select: { nomeCategoria: true, Artista: true } }, } })
+  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { artista: true, categoria: { select: { nomeCategoria: true } }, } })
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se que escolheu a edição correta', 404)
   }
@@ -27,7 +27,7 @@ export async function listarUmaEdicao(idEdicao: string): Promise<ISucesso> {
 }
 
 export async function eliminarUmaEdicao(idEdicao: string): Promise<ISucesso> {
-  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categorias: true } })
+  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categoria: true } })
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se que escolheu a edição correta', 404)
   }
@@ -61,9 +61,9 @@ export async function criarEdicao(params: ICriarEdicao): Promise<ISucesso> {
       dataComeco: params.dataComeco,
       dataTermino: params.dataTermino,
       nomeEdicao: params.nomeEdicao,
-      categorias: {
+      categoria: {
         connect: categoriasForEvento.map(categoria => ({ idCategoria: categoria.idCategoria }))
-      },
+      }
     }
   })
   if (edicao == null) {
@@ -77,7 +77,7 @@ export async function criarEdicao(params: ICriarEdicao): Promise<ISucesso> {
 }
 
 export async function atualizarEdicao(idEdicao: string, params: IAtualizarEdicao): Promise<ISucesso> {
-  const edicao = await prismaEdicao.findUnique({ where: { idEdicao } })
+  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categoria: true } })
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se por favor que escolheu a edição correta', 404)
   }
@@ -97,20 +97,12 @@ export async function atualizarEdicao(idEdicao: string, params: IAtualizarEdicao
   if (params.categorias != null && params.categorias?.length > 0) {
     // Verificar se uma das categorias encontra-se ativa
     for await (const idCategoria of params.categorias) {
-      const categoriasForEvento: any[] = []
       const categoria = await prismaCategorias.findUnique({ where: { idCategoria } })
+
       if (categoria == null) {
-        throw new ApiError('APIERROR', 'Certifique-se por favor que escolheu a categoria correta', 422)
+        throw new ApiError('APIERROR', 'Certifique-se que escolheu a categoria correta', 404)    
       }
-      categoriasForEvento.push({ idCategoria: categoria.idCategoria, nomeDaCategoria: categoria.nomeCategoria })
-      const edicaoAtualizada = await prismaEdicao.update({
-        where: { idEdicao },
-        data: {
-          categorias: {
-            connect: categoriasForEvento.map(categoria => ({ idCategoria: categoria.idCategoria }))
-          }
-        }
-      })
+      const edicaoAtualizada = await prismaEdicao.update({ where: { idEdicao }, data: { categoria: { connect: { idCategoria: categoria.idCategoria } } } });
       return {
         status: 201,
         message: 'Edição atualizada com sucesso.',

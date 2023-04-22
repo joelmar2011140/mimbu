@@ -1,5 +1,51 @@
 import Joi from "joi";
 
+export const validarIngressarArtista = Joi.object({
+  titulo: Joi.string().required().empty().messages({
+    'any.required': 'Indique por favor o titulo da música a concorrer',
+    'string.base': 'Indique por favor o titulo da música a concorrer',
+    'string.empty': 'Indique por favor o titulo da música a concorrer',
+  }),
+  link_musica: Joi.string().required().empty().messages({
+    'any.required': 'Indique por favor o link da música a concorrer',
+    'string.base': 'Indique por favor o link da música a concorrer',
+    'string.empty': 'Indique por favor o link da música a concorrer',
+  }),
+  ano_gravacao: Joi.number().required().empty().messages({
+    'any.required': 'Indique por favor o ano de lançamento da música a concorrer',
+    'number.base': 'Indique por favor o ano de lançamento da música a concorrer',
+    'number.empty': 'Indique por favor o ano de lançamento da música a concorrer',
+  }),
+  nomeGenero: Joi.string().required().empty().messages({
+    'any.required': 'Indique por favor o género da música a concorrer',
+    'string.base': 'Indique por favor o género da música a concorrer',
+    'string.empty': 'Indique por favor o género da música a concorrer',
+  }),
+  idEdicao: Joi.string().required().empty().messages({
+    'any.required': 'Seleccione por favor a edição',
+    'string.base': 'Seleccione por favor a edição',
+    'string.empty': 'Seleccione por favor a edição',
+  }),
+  idCategoria: Joi.string().required().empty().messages({
+    'any.required': 'Seleccione por favor a categoria',
+    'string.base': 'Seleccione por favor a categoria',
+    'string.empty': 'Seleccione por favor a categoria',
+  }),
+})
+
+export const validarSairArtista = Joi.object({
+  idEdicao: Joi.string().required().empty().messages({
+    'any.required': 'Seleccione por favor a edição',
+    'string.base': 'Seleccione por favor a edição',
+    'string.empty': 'Seleccione por favor a edição',
+  }),
+  idCategoria: Joi.string().required().empty().messages({
+    'any.required': 'Seleccione por favor a categoria',
+    'string.base': 'Seleccione por favor a categoria',
+    'string.empty': 'Seleccione por favor a categoria',
+  }),
+})
+
 export const validarRegistoArtista = Joi.object({
   nomeArtistico: Joi.string().required().empty().messages({
     'any.required': 'Informe por favor o seu nome artístico',
