@@ -19,10 +19,11 @@ model Edicao {
 }
 
 model Categoria {
-  idCategoria   String   @id @default(uuid())
-  nomeCategoria String   @unique
+  idCategoria   String    @id @default(uuid())
+  nomeCategoria String    @unique
   Edicao        Edicao[]
   musica        Musica[]
+  artistas      Artista[]
 }
 
 model Usuario {
@@ -47,9 +48,9 @@ model Noticias {
 }
 
 model Artista {
-  idArtista        String   @id @default(uuid())
-  nomeArtistico    String   @unique
-  telefone         String   @unique
+  idArtista        String      @id @default(uuid())
+  nomeArtistico    String      @unique
+  telefone         String      @unique
   participa        Boolean
   dataNascimento   String
   imagemPerfil     String
@@ -60,7 +61,8 @@ model Artista {
   nomeRua          String
   Edicao           Edicao[]
   Musica           Musica[]
-  usuario          Usuario? @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  categorias       Categoria[]
+  usuario          Usuario?    @relation(fields: [usuarioIdUsuario], references: [idUsuario])
   usuarioIdUsuario String?
 }
 

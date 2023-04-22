@@ -58,6 +58,9 @@ export async function registarArtista(params: IAdicionarArtista): Promise<ISuces
       nomeRua: params.nomeRua,
       participa: true,
       telefone: params.telefone,
+      categorias: {
+        connect: { idCategoria: params.idCategoria }
+      },
       Edicao: {
         connect: { idEdicao: edicao.idEdicao }
       },

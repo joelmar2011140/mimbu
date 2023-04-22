@@ -15,7 +15,7 @@ export async function listarEdicoes(pagina: number, porPagina: number, sq?: stri
 }
 
 export async function listarUmaEdicao(idEdicao: string): Promise<ISucesso> {
-  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { artista: true, categoria: { select: { nomeCategoria: true } }, } })
+  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categoria: { include: { artistas: true } } } })
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se que escolheu a edição correta', 404)
   }
@@ -100,7 +100,7 @@ export async function atualizarEdicao(idEdicao: string, params: IAtualizarEdicao
       const categoria = await prismaCategorias.findUnique({ where: { idCategoria } })
 
       if (categoria == null) {
-        throw new ApiError('APIERROR', 'Certifique-se que escolheu a categoria correta', 404)    
+        throw new ApiError('APIERROR', 'Certifique-se que escolheu a categoria correta', 404)
       }
       const edicaoAtualizada = await prismaEdicao.update({ where: { idEdicao }, data: { categoria: { connect: { idCategoria: categoria.idCategoria } } } });
       return {

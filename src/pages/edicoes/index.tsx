@@ -17,9 +17,13 @@ export default function EdicoesPage() {
   return (
     <StandardLayout tituloDaPagina='Lista de edições' descricao='Mimbu'>
       <div className="flex justify-center items-center  min-h-screen">
-        <div className="max-w-7xl p-6 bg-black w-full px-4 sm:px-6 lg:px-8">
-          { isLoading ? (<Loading />) : <ListaEdicoes data={data} /> }
-        </div>
+        {
+          isLoading ? (<Loading />) : (
+            <div className="max-w-7xl p-6 bg-black w-full px-4 sm:px-6 lg:px-8">
+              {(data.length === 0) ? <h1 className='text-white text-2xl text-center'>Nã existem concursos😔</h1> : <ListaEdicoes data={data} />}
+            </div>
+          )
+        }
       </div>
     </StandardLayout>
   )
