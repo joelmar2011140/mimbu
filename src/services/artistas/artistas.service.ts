@@ -25,6 +25,11 @@ export async function registarArtista(params: IAdicionarArtista): Promise<ISuces
     throw new ApiError('APIERROR', 'Certifique-se que escolheu a edição correta', 404)
   }
   const hoje = moment()
+  const aniversario = moment(params.dataNascimento)
+  const idade = hoje.diff(aniversario, "years")
+  if (idade < 18) {
+    throw new ApiError('APIERROR', 'Não pode concorrer pois é menor de 18 anos de idade', 422)
+  }
   const dataInicioNormalizada = moment(edicao.dataComeco, 'YYYY-MM-DD', true)
   const dataFimNormalizada = moment(edicao.dataTermino, 'YYYY-MM-DD', true)
   if (edicao.categoria.length === 0) {
@@ -47,6 +52,11 @@ export async function registarArtista(params: IAdicionarArtista): Promise<ISuces
     throw new ApiError('APIERROR', 'Este artista encontra-se cadastrado nesta edição', 422)
   }
   const artista = await prismaArtistas.create({
+    include: {
+      usuario: { 
+        select: { role: true }
+      }
+    },
     data: {
       dataNascimento: params.dataNascimento,
       imagemPerfil: params.imagemPerfil,
@@ -69,7 +79,8 @@ export async function registarArtista(params: IAdicionarArtista): Promise<ISuces
           email: params.email,
           enderecoBlockchain: params.enderecoBlockchain,
           genero: params.genero,
-          senha: senhaEncriptada
+          senha: senhaEncriptada,
+          role: 'artista'
         }
       },
       Musica: {

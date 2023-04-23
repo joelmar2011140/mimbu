@@ -47,21 +47,23 @@ export async function criarVotante(params: ICriarVotante): Promise<ISucesso | IE
   const { bairro, bilheteDeIdentidade, distrito, enderecoBlockchain, email, municipio, provincia, rua } = params
   const senhaEncriptada = await hash(bilheteDeIdentidade, saltos)
   const votante = await prismaVotante.create({
+    include: {
+      usuario: { select: { idUsuario: true } }
+    },
     data: {
       bilheteDeIdentidade,
       usuario: {
         create: {
           email,
           enderecoBlockchain,
-          senha: senhaEncriptada,
-          role: 'votante',
+          senha: senhaEncriptada
         }
       },
-     nomeBairro: params.bairro,
-     nomeDistrito: params.distrito,
-     nomeMunicipio: params.municipio,
-     nomeProvincia: params.provincia,
-     nomeRua: params.rua
+     nomeBairro: bairro,
+     nomeDistrito: distrito,
+     nomeMunicipio: municipio,
+     nomeProvincia: provincia,
+     nomeRua: rua
     }
   })
   if (votante == null) {

@@ -1,28 +1,45 @@
 import SingleEdicao from "@/components/Edicoes/SingleEdicao";
+import useBlockChain from "@/hooks/useBlockchain";
 import { StandardLayout } from "@/layouts/StandardLayout";
 import { fetchEdicao } from "@/lib/fetch.functions";
+import { useStoreActions } from "easy-peasy";
 import moment from "moment";
+import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-export async function getServerSideProps(props: any) {
-  const edicao = await fetchEdicao(props.params.idEdicao)
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const edicao = await fetchEdicao(ctx.params.idEdicao)
+  console.log(ctx.req.cookies)
+  if (ctx.req.cookies.jwt == null) {
+    return {
+      redirect: {
+        permanent: true,
+        destination: `/login`
+      },
+    }
+  }
   return {
     props: { edicao }
   }
 }
 
 export default function SingleEdicaoPage({ edicao }: any) {
+  const { blockChain } = useBlockChain()
+  const clearAll = useStoreActions((accao: any) => accao.clearAll)
   const roteador = useRouter()
-  const hoje = moment()
-  const dataInicioNormalizada = moment(edicao.dataComeco, 'YYYY-MM-DD', true)
 
   useEffect(() => {
-    if (dataInicioNormalizada.format('YYYY-MM-DD') !== hoje.format('YYYY-MM-DD')) {
-      roteador.push('/')
-      return 
+    if (blockChain.provider != null) {
+      blockChain.provider.on('accountsChanged', async (contas: any) => {
+        await fetch('http://localhost:3000/api/auth/logout', { method: 'DELETE' })
+        clearAll()
+        roteador.reload()
+        return
+      })
     }
-  }, [edicao, roteador])
+  }, [blockChain])
+
   return (
     <StandardLayout tituloDaPagina={`Edição ${edicao.nomeEdicao}`} descricao="Mimbu">
       <SingleEdicao edicao={edicao} />

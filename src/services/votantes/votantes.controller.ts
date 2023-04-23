@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { validarRegistoVotante } from '../votantes/votantes.validations'
 import { criarVotante, listarVotantes, eliminarUmVotante, listarUmVotante } from '../votantes/votantes.service'
 import { IErro, ISucesso } from '@/global.types'
+import jwt from 'jsonwebtoken'
+import { serialize } from 'cookie'
 
 export async function listarVotantesHttp (req: NextApiRequest, res: NextApiResponse<ISucesso>): Promise<any> {
   try {
@@ -69,7 +71,10 @@ export async function eliminarUmVotanteHttp (req: NextApiRequest, res: NextApiRe
 export async function criarVotanteHttp (req: NextApiRequest, res: NextApiResponse<ISucesso>): Promise<any> {
   try {
     const data = await validarRegistoVotante.validateAsync(req.body)
-    const response = await criarVotante(data)
+    const response: any = await criarVotante(data)
+    const token = jwt.sign({ sub: response.data.usuario.idUsuario }, 'mimbu')
+    const cookie = serialize('jwt', JSON.stringify({ token, role: response.data.usuario.role }), { path: '/', httpOnly: true })
+    res.setHeader('Set-Cookie', cookie)
     return res.status(response.status).json(response)
   } catch (err: any) {
     console.error(err)

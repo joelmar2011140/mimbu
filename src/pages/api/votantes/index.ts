@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
-import { criarVotanteHttp, listarVotantesHttp } from "@/services/edicoes/edicoes.controller";
+import { criarVotanteHttp, listarVotantesHttp } from "@/services/votantes/votantes.controller";
 
 const handler = nc({
   onError: (err, req: NextApiRequest, res: NextApiResponse, next) => {

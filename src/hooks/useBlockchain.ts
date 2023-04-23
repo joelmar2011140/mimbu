@@ -6,7 +6,7 @@ import { loadContrato } from '@/lib/load.contrato.';
 
 
 const useBlockChain = () => {
-  const [blockChain, setBlockchain] = useState({ web3: null, contrato: null })
+  const [blockChain, setBlockchain] = useState({ web3: null, contrato: null, provider: null })
   const startBlockChain = useCallback(async () => {
     const provider = await detectEthereumProvider()
     if (provider == null) {
@@ -15,7 +15,7 @@ const useBlockChain = () => {
     }
     const web3: any = new Web3(provider as any)
     const contrato = await loadContrato(web3.currentProvider)
-    setBlockchain({ web3, contrato })
+    setBlockchain({ web3, contrato, provider })
   }, [])
 
   useEffect(() => {

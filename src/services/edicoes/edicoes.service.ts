@@ -15,7 +15,7 @@ export async function listarEdicoes(pagina: number, porPagina: number, sq?: stri
 }
 
 export async function listarUmaEdicao(idEdicao: string): Promise<ISucesso> {
-  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categoria: { include: { artistas: true } } } })
+  const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categoria: { include: { artistas: { include: { usuario: { select: { email: true, enderecoBlockchain: true, genero: true } }, Musica: true } } } } } })
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se que escolheu a edição correta', 404)
   }

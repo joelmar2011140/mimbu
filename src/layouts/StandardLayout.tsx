@@ -1,7 +1,6 @@
 import Head from "next/head";
 import { IStandardLayout } from "@/global.types";
 import { Header } from "@/components/Header";
-import useBlockChain from "@/hooks/useBlockchain";
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
 
@@ -28,10 +27,6 @@ export function StandardLayout({ children, descricao, tituloDaPagina }: IStandar
 
 export function LayoutForms({ children, descricao, tituloDaPagina }: IStandardLayout) {
   const titulo: string = `Mimbu - ${tituloDaPagina}`
-  const { blockChain } = useBlockChain()
-
-  console.log(blockChain)
-
   return (
     <>
       <Head>

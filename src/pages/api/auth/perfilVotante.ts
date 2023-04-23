@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
-import { eliminarUmVotanteHttp, listarUmVotanteHttp } from "@/services/votantes/votantes.controller";
+import { perfilVotanteHttp } from "@/services/auth/login.controller";
 
 const handler = nc({
   onError: (err, req: NextApiRequest, res: NextApiResponse, next) => {
@@ -11,7 +11,6 @@ const handler = nc({
     res.status(404).end("Page is not found");
   },
 })
-  .get(listarUmVotanteHttp)
-  .delete(eliminarUmVotanteHttp)
+  .post(perfilVotanteHttp)
 
 export default handler;

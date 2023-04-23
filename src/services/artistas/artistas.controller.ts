@@ -5,6 +5,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { validarAtualizarArtista, validarIngressarArtista, validarRegistoArtista, validarSairArtista } from "./artistas.validations";
 import { deleteFile, verificarImagem } from "@/utils/utils.functions";
 import { IErro } from "@/global.types";
+import jwt from 'jsonwebtoken'
+import { serialize } from 'cookie'
 
 export async function listarArtistasHttp(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -71,7 +73,7 @@ export async function ingressarEmEdicaoHttp(req: NextApiRequest, res: NextApiRes
   }
 }
 
-export async function sairDeEdicaoHttp (req: NextApiRequest, res: NextApiResponse) {
+export async function sairDeEdicaoHttp(req: NextApiRequest, res: NextApiResponse) {
   try {
     const idArtista = req.query.idArtista as string
     const incomingData = await validarSairArtista.validateAsync(req.body)
@@ -118,6 +120,8 @@ export async function listarUmArtistaHttp(req: NextApiRequest, res: NextApiRespo
 
 export async function registarArtistaHttp(req: NextApiRequest, res: NextApiResponse) {
   formidableInstArtista.parse(req, async (err: any, fields: any, files: any) => {
+    console.log(fields, files);
+
     try {
       if (err != null) {
         throw err
@@ -129,6 +133,9 @@ export async function registarArtistaHttp(req: NextApiRequest, res: NextApiRespo
       const { imagemPerfil, ...rest } = fields
       const incomingData = await validarRegistoArtista.validateAsync({ ...rest, imagemPerfil: files.imagemPerfil.filepath })
       const resposta = await registarArtista(incomingData)
+      const token = jwt.sign({ sub: resposta.data.usuario.idUsuario }, 'mimbu')
+      const cookie = serialize('jwt', JSON.stringify({ token, role: resposta.data.usuario.role }), { path: '/', httpOnly: true })
+      res.setHeader('Set-Cookie', cookie)
       return res.status(resposta.status).json(resposta)
     } catch (err: any) {
       console.log('here', err)
