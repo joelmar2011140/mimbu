@@ -233,7 +233,7 @@ const Table = () => {
                       Editar dados da edição {selectedEdicao != null ? selectedEdicao.nomeEdicao : null}
                     </p>
                   </div>
-                  <FormularioEdicaoEditar idEdicao={selectedEdicao != null ? selectedEdicao.idEdicao : null} />
+                  <FormularioEdicaoEditar idEdicao={selectedEdicao != null ? selectedEdicao : null} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

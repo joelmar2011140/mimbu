@@ -77,7 +77,6 @@ export async function criarEdicao(params: ICriarEdicao): Promise<ISucesso> {
 }
 
 export async function atualizarEdicao(idEdicao: string, params: IAtualizarEdicao): Promise<ISucesso> {
-  console.log(idEdicao, params)
   const edicao = await prismaEdicao.findUnique({ where: { idEdicao }, include: { categoria: true } })
   if (edicao == null) {
     throw new ApiError('APIERROR', 'Certifique-se por favor que escolheu a edição correta', 404)

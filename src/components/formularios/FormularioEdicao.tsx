@@ -62,6 +62,7 @@ export default function FormularioEdicao() {
 
 
 export function FormularioEdicaoEditar({ idEdicao }: any) {
+  console.log(idEdicao)
   const roteador = useRouter()
   const [errObj, setObject] = useState({ isLoading: false, errMsg: '' })
   const { register, handleSubmit, formState: { errors } } = useForm()
@@ -72,23 +73,49 @@ export function FormularioEdicaoEditar({ idEdicao }: any) {
   const onSubmit: SubmitHandler<any> = async (data, e) => {
     e?.preventDefault()
     const formData = new FormData()
-    formData.append('capa', data.capa[0])
-    formData.append('dataComeco', data.dataComeco)
-    formData.append('dataComeco', data.dataComeco)
-    formData.append('dataTermino', data.dataTermino)
-    formData.append('nomeEdicao', data.nomeEdicao)
-    formData.append('categorias', JSON.stringify(categorias.map((cat: any) => (cat.value))))
     try {
-      if (idEdicao != null && categorias.length > 0) {
-        const incomingResponse = await axios.patch(`http://localhost:3000/api/edicoes/${idEdicao}`, formData)
-        setObject({ isLoading: false, errMsg: '' })
-        toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
-        return roteador.reload()
+      if (data.capa.length > 0) {
+        formData.append('capa', data.capa[0])
+        if (idEdicao != null) {
+          const incomingResponse = await axios.patch(`http://localhost:3000/api/edicoes/${idEdicao.idEdicao}`, formData)
+          setObject({ isLoading: false, errMsg: '' })
+          toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+          return roteador.reload()
+        }
+      } if (categorias.length > 0) {
+        formData.append('categorias', JSON.stringify(categorias.map((cat: any) => (cat.value))))
+        if (idEdicao != null) {
+          const incomingResponse = await axios.patch(`http://localhost:3000/api/edicoes/${idEdicao.idEdicao}`, formData)
+          setObject({ isLoading: false, errMsg: '' })
+          toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+          return roteador.reload()
+        }
+      } if (data.dataComeco.length > 0) {
+        formData.append('dataComeco', data.dataComeco)
+        if (idEdicao != null) {
+          const incomingResponse = await axios.patch(`http://localhost:3000/api/edicoes/${idEdicao.idEdicao}`, formData)
+          setObject({ isLoading: false, errMsg: '' })
+          toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+          return roteador.reload()
+        }
+      } if (data.dataTermino.length > 0) {
+        formData.append('dataTermino', data.dataTermino)
+        if (idEdicao != null) {
+          const incomingResponse = await axios.patch(`http://localhost:3000/api/edicoes/${idEdicao.idEdicao}`, formData)
+          setObject({ isLoading: false, errMsg: '' })
+          toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+          return roteador.reload()
+        }
+      } if (data.nomeEdicao.length > 0) {
+        formData.append('nomeEdicao', data.nomeEdicao)
+        if (idEdicao != null) {
+          const incomingResponse = await axios.patch(`http://localhost:3000/api/edicoes/${idEdicao.idEdicao}`, formData)
+          setObject({ isLoading: false, errMsg: '' })
+          toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+          return roteador.reload()
+        }
       }
-      const incomingResponse = await axios.patch(`http://localhost:3000/api/edicoes/${idEdicao}`, formData)
-      setObject({ isLoading: false, errMsg: '' })
-      toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
-      return roteador.reload()
+
     } catch (err: any) {
       console.error(err)
       if (err.name === 'AxiosError') {

@@ -8,9 +8,10 @@ interface InputProps {
   required?: boolean
   register: UseFormRegister<any>
   name: string
+  valor?: any
 }
 
-function Input({ label, placeholder, type, register, required, name }: InputProps) {
+function Input({ label, placeholder, type, register, required, name, valor }: InputProps) {
   return (
     <div className="flex flex-col mb-4">
       <label htmlFor={label} className="mb-2 text-lg font-medium">
@@ -24,6 +25,7 @@ function Input({ label, placeholder, type, register, required, name }: InputProp
             type={type}
             id={label}
             placeholder={placeholder}
+            value={valor}
             className="border-2 border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500"
             {...register(name, { required })}
           />
