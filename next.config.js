@@ -4,7 +4,7 @@ const nextConfig = {
   redirects: async () => {
     return [
       { source: '/', destination: '/edicoes', permanent: true },
-      { source: '/dashboard', destination: '/dashboard/edicoes', permanent: true }
+      { source: '/panel', destination: '/panel/edicoes', permanent: true }
     ]
   }
 }

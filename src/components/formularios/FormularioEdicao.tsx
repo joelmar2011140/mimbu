@@ -1,0 +1,118 @@
+import { SubmitHandler, useForm } from "react-hook-form";
+import Input from "../Input"
+import { fetchCategorias } from "@/lib/fetch.functions";
+import { useQuery } from "react-query";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useRouter } from "next/router";
+import Select from 'react-select'
+
+export default function FormularioEdicao() {
+  const roteador = useRouter()
+  const [errObj, setObject] = useState({ isLoading: false, errMsg: '' })
+  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { data } = useQuery('categorias', fetchCategorias)
+  const [categorias, setCategorias] = useState([])
+  const filteredCate = data != null ? data.data.map((categoria: any) => ({ label: categoria.nomeCategoria, value: categoria.idCategoria })) : []
+
+  const onSubmit: SubmitHandler<any> = async (data, e) => {
+    e?.preventDefault()
+    const formData = new FormData()
+    if (categorias.length > 0) {
+      formData.append('capa', data.capa[0])
+      formData.append('dataComeco', data.dataComeco)
+      formData.append('dataComeco', data.dataComeco)
+      formData.append('dataTermino', data.dataTermino)
+      formData.append('nomeEdicao', data.nomeEdicao)
+      formData.append('categorias', JSON.stringify(categorias.map((cat: any) => (cat.value))))
+    }
+    try {
+      const incomingResponse = await axios.post('http://localhost:3000/api/edicoes', formData)
+      setObject({ isLoading: false, errMsg: '' })
+      toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+      return roteador.reload()
+    } catch (err: any) {
+      console.error(err)
+      if (err.name === 'AxiosError') {
+        toast(err.response.data.message, { type: 'error', position: 'bottom-right' })
+        return
+      }
+    }
+  }
+
+  return (
+    <>
+      <Input name="nomeEdicao" type="text" label="Título da edição" placeholder="Título da edição" register={register} />
+      <p className="text-red-700">{errors.nomeEdicao ? "Insira o título desta edição por favor" : null}</p>
+      <div className="flex items-center justify-between flex-row">
+        <Input name="dataComeco" type="date" label="Data começo" placeholder="Data começo" register={register} />
+        <Input name="dataTermino" type="date" label="Data término" placeholder="Data término" register={register} />
+      </div>
+      <p className="text-red-700">{errors.dataComeco ? "Insira a data de início das votações" : errors.dataTermino ? 'Insira a data de fim das votações' : null}</p>
+      <Input name="capa" type="file" register={register} label="Capa do evento" placeholder="Capa do evento" />
+      <p className="text-red-700">{errors.imagem ? "Insira uma capa para o evento por favor" : null}</p>
+      <label htmlFor='genero' className="mb-2 text-lg font-medium">Seleccione a categoria</label>
+      <Select className="mb-16" isMulti options={filteredCate} placeholder='Selecionar categorias' onChange={(e) => setCategorias(e as any)} />
+      <button onClick={handleSubmit(onSubmit)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Adicionar uma edição</button>
+    </>
+
+  )
+}
+
+
+export function FormularioEdicaoEditar({ idEdicao }: any) {
+  const roteador = useRouter()
+  const [errObj, setObject] = useState({ isLoading: false, errMsg: '' })
+  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { data } = useQuery('categorias', fetchCategorias)
+  const [categorias, setCategorias] = useState([])
+  const filteredCate = data != null ? data.data.map((categoria: any) => ({ label: categoria.nomeCategoria, value: categoria.idCategoria })) : []
+
+  const onSubmit: SubmitHandler<any> = async (data, e) => {
+    e?.preventDefault()
+    const formData = new FormData()
+    formData.append('capa', data.capa[0])
+    formData.append('dataComeco', data.dataComeco)
+    formData.append('dataComeco', data.dataComeco)
+    formData.append('dataTermino', data.dataTermino)
+    formData.append('nomeEdicao', data.nomeEdicao)
+    formData.append('categorias', JSON.stringify(categorias.map((cat: any) => (cat.value))))
+    try {
+      if (idEdicao != null && categorias.length > 0) {
+        const incomingResponse = await axios.patch(`http://localhost:3000/api/edicoes/${idEdicao}`, formData)
+        setObject({ isLoading: false, errMsg: '' })
+        toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+        return roteador.reload()
+      }
+      const incomingResponse = await axios.patch(`http://localhost:3000/api/edicoes/${idEdicao}`, formData)
+      setObject({ isLoading: false, errMsg: '' })
+      toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+      return roteador.reload()
+    } catch (err: any) {
+      console.error(err)
+      if (err.name === 'AxiosError') {
+        toast(err.response.data.message, { type: 'error', position: 'bottom-right' })
+        return
+      }
+    }
+  }
+
+  return (
+    <>
+      <Input name="nomeEdicao" type="text" label="Título da edição" placeholder="Título da edição" register={register} />
+      <p className="text-red-700">{errors.nomeEdicao ? "Insira o título desta edição por favor" : null}</p>
+      <div className="flex items-center justify-between flex-row">
+        <Input name="dataComeco" type="date" label="Data começo" placeholder="Data começo" register={register} />
+        <Input name="dataTermino" type="date" label="Data término" placeholder="Data término" register={register} />
+      </div>
+      <p className="text-red-700">{errors.dataComeco ? "Insira a data de início das votações" : errors.dataTermino ? 'Insira a data de fim das votações' : null}</p>
+      <Input name="capa" type="file" register={register} label="Capa do evento" placeholder="Capa do evento" />
+      <p className="text-red-700">{errors.imagem ? "Insira uma capa para o evento por favor" : null}</p>
+      <label htmlFor='genero' className="mb-2 text-lg font-medium">Seleccione a categoria</label>
+      <Select className="mb-16" isMulti options={filteredCate} placeholder='Selecionar categorias' onChange={(e) => setCategorias(e as any)} />
+      <button onClick={handleSubmit(onSubmit)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Editar uma edição</button>
+    </>
+
+  )
+}

@@ -14,6 +14,19 @@ export async function fetchEdicoesUser() {
   return toFilter
 }
 
+export async function fetchCategorias() {
+  const raw = await fetch('/api/categorias')
+  const data = await raw.json()
+  return data.data
+}
+
+
+export async function fetchEdicoesParam(pagina: number, porPagina: number, sq?: string) {
+  const raw = await fetch(`/api/edicoes?pagina=${pagina}&porPagina=${porPagina}`)
+  const data = await raw.json()
+  return data
+}
+
 
 export async function fetchEdicao(idEdicao: string) {
   const raw = await fetch(`http://localhost:3000/api/edicoes/${idEdicao}`)

@@ -9,6 +9,8 @@ export interface IStandardLayout extends IProvider {
   descricao: string
 }
 
+
+
 export interface IErro {
   status: number
   message: string
