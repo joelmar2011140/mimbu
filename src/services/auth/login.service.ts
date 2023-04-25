@@ -17,8 +17,11 @@ export async function validarCredentials (params: ILoginParams): Promise<ILogin>
   if (!compare(params.senha, usuario.senha)) {
     throw new ApiError('APIERROR', 'Email ou senha inválida', 401)
   }
-  if (usuario.enderecoBlockchain !== params.enderecoBlockchain) {
-    throw new ApiError('APIERROR', 'Verifique por favor se esta carteira está ligada à este usuário', 401)
+  // Verificar a role aqui , por caso seja um admin não será necessaria esta verificação
+  if (usuario.role !== 'admin') {
+    if (usuario.enderecoBlockchain !== params.enderecoBlockchain) {
+      throw new ApiError('APIERROR', 'Verifique por favor se esta carteira está ligada à este usuário', 401)
+    }
   }
   const token = jwt.sign({ sub: usuario.idUsuario }, 'mimbu')
   return {
