@@ -27,6 +27,19 @@ export async function fetchEdicoesParam(pagina: number, porPagina: number, sq?: 
   return data
 }
 
+export async function fetchCategoriasParam(pagina: number, porPagina: number, sq?: string) {
+  const raw = await fetch(`/api/categorias?pagina=${pagina}&porPagina=${porPagina}`)
+  const data = await raw.json()
+  return data
+}
+
+export async function fetchVotantesParam(pagina: number, porPagina: number, sq?: string) {
+  const raw = await fetch(`/api/votantes?pagina=${pagina}&porPagina=${porPagina}`)
+  const data = await raw.json()
+  console.log(data);
+  
+  return data
+}
 
 export async function fetchEdicao(idEdicao: string) {
   const raw = await fetch(`http://localhost:3000/api/edicoes/${idEdicao}`)

@@ -6,10 +6,11 @@ import { BiCategory } from 'react-icons/bi'
 import { GiMusicalNotes, GiVote } from 'react-icons/gi'
 import { useStoreState } from "easy-peasy";
 import Link from "next/link";
+import { FiEdit } from "react-icons/fi";
 
 export function DashboardLayout({ children }: IProvider) {
   const estado = useStoreState((state: any) => state)
-  
+
   const titulo: string = `Mimbu - Painel administrativo`
   return (
     <>
@@ -20,10 +21,19 @@ export function DashboardLayout({ children }: IProvider) {
       </Head>
       <div className="flex flex-col md:flex-row h-screen">
         {/* Sidebar */}
-        <aside className="min-w-screen fixed  bg-white text-gray p-6 border-r-2 border-r-violet-500">
+        <aside className="min-w-screen   bg-white text-gray p-6 border-r-2 border-r-violet-500">
           <h1 className="text-3xl text-center text-gray-700 font-bold mb-16">Mimbu</h1>
           <nav>
             <ul>
+              <li className="mb-8 flex flex-row items-center gap-4 p-2 hover:bg-violet-600">
+                <FiEdit
+                  className=" text-gray-500 hover:text-white"
+                  size={20}
+                />
+                <Link href="/panel/noticias" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
+                  <span className="mr-2">Publicar notícia</span>
+                </Link>
+              </li>
               <li className="mb-8 flex flex-row items-center gap-4 p-2 hover:bg-violet-600 ">
                 <BsNewspaper
                   className=" text-gray-500 hover:text-white"
@@ -65,7 +75,7 @@ export function DashboardLayout({ children }: IProvider) {
         </aside>
 
         {/* Content */}
-        <div className="flex-1 absolute ml-64 p-6 bg-white">
+        <div className="flex-1 p-6 bg-white">
           <div className="flex flex-wrap md:flex-no-wrap justify-between items-center mb-6">
             {/* Search component */}
             <div className="relative flex items-center w-full md:w-auto mr-4 mb-4 md:mb-0">

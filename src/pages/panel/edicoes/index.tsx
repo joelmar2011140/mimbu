@@ -32,7 +32,6 @@ import Table from '@/components/Tables/Tabela'
 // }
 
 export default function DashboardPage() {
-  const [activeMenu, setActiveMenu] = useState("home");
   const { blockChain } = useBlockChain()
   const clearAll = useStoreActions((accao: any) => accao.clearAll)
   const roteador = useRouter()
