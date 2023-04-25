@@ -1,17 +1,18 @@
 import React, { useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react'
-import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai'
+import { AiFillCalendar, AiFillHome, AiFillPhone, AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai'
 import { useQuery } from 'react-query';
-import { fetchEdicoesParam, fetchNoticiasParam, fetchVotantesParam } from '@/lib/fetch.functions';
+import { fetchArtistasParam, fetchCategoriasParam, fetchEdicoesParam, fetchNoticiasParam, fetchVotantesParam } from '@/lib/fetch.functions';
 import Link from 'next/link';
 import { showPath } from './Disclosure/Disclosure';
-import { BsPencil } from 'react-icons/bs';
+import { BsFillFileMusicFill, BsPencil } from 'react-icons/bs';
 import { RiDeleteBin6Line } from 'react-icons/ri'
-import FormularioEdicao, { FormularioEdicaoEditar, FormularioNoticia, FormularioNoticiaEditar } from './formularios/FormularioEdicao';
+import FormularioEdicao, { FormularioArtistaEditar, FormularioCategoria, FormularioEdicaoEditar, FormularioEditarCategoria, FormularioNoticia, FormularioNoticiaEditar } from './formularios/FormularioEdicao';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useStoreState } from 'easy-peasy';
+import { BiCategory } from 'react-icons/bi';
 
 const Table = () => {
   const sq = useStoreState((state: any) => state.sq)
@@ -384,7 +385,7 @@ export const TableVotantes = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="h-16 flex items-center">{votante.usuario.email}</div>
                         </td>
-                      
+
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className='w-full flex flex-row gap-2 items-center justify-center'>
                             <button className="rounded-none bg-red-600 p-2 text-white mb-8 font-bold" onClick={() => openModal('delete', votante)}><RiDeleteBin6Line /></button>
@@ -508,7 +509,7 @@ export const TableNoticias = () => {
 
   async function eliminarNoticia(idNoticia: string) {
     try {
-      if (setSelectedNoticia != null) {
+      if (selectedNoticia != null) {
         const incomingResponse = await axios.delete(`http://localhost:3000/api/noticias/${idNoticia}`)
         toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
         return roteador.reload()
@@ -558,7 +559,7 @@ export const TableNoticias = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="h-16 flex items-center">{new Date(noticia.dataDaNoticia).toLocaleString('pt', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
                         </td>
-                      
+
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="h-16 flex items-center">
                             <Link target='_blank' href={`http://localhost:3000/${showPath(noticia.imagemDaNoticia)}`} className='underline'>Clique aqui para ver</Link>
@@ -718,6 +719,494 @@ export const TableNoticias = () => {
                     </p>
                     <div className='w-full mt-6 flex flex-row gap-2 items-center justify-start'>
                       <button className="rounded-none bg-green-600 p-2 text-white mb-8 font-bold" onClick={async () => eliminarNoticia(selectedNoticia.idNoticia)}>Sim</button>
+                      <button className="rounded-none bg-red-600 p-2 text-white mb-8 font-bold" onClick={() => closeModal('delete')}>Não</button>
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </div>
+  );
+};
+
+export const CardListCategorias = () => {
+  const sq = useStoreState((state: any) => state.sq)
+  const roteador = useRouter()
+  const [selectedCategoria, setSelectedCategoria] = useState<any>({})
+  const [pagina, setPagina] = useState(0)
+  const [porPagina, setPorPagina] = useState(10)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenEdit, setIsOpenEdit] = useState(false)
+  const [isOpenDelete, setIsOpenDelete] = useState(false)
+  const { data, isLoading } = useQuery({
+    queryKey: ['fetchCategoriasInside', pagina, porPagina, sq],
+    queryFn: async () => await fetchCategoriasParam(pagina, porPagina, sq),
+    keepPreviousData: true
+  });
+
+  function closeModal(type: 'normal' | 'edit' | 'delete') {
+    switch (type) {
+      case 'normal':
+        setIsOpen(false)
+        break
+      case 'edit':
+        setIsOpenEdit(false)
+        break
+      case 'delete':
+        setIsOpenDelete(false)
+        break
+    }
+  }
+
+  function openModal(type: 'normal' | 'edit' | 'delete', categoria?: any) {
+    switch (type) {
+      case 'normal':
+        setIsOpen(true)
+        break
+      case 'edit':
+        setIsOpenEdit(true)
+        setSelectedCategoria(categoria)
+        break
+      case 'delete':
+        setIsOpenDelete(true)
+        setSelectedCategoria(categoria)
+        break
+    }
+  }
+
+  async function eliminarCategoria(idCategoria: string) {
+    try {
+      if (selectedCategoria != null) {
+        const incomingResponse = await axios.delete(`http://localhost:3000/api/categorias/${idCategoria}`)
+        toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+        return roteador.reload()
+      }
+    } catch (err: any) {
+      console.error(err)
+      if (err.name === 'AxiosError') {
+        toast(err.response.data.message, { type: 'error', position: 'bottom-right' })
+        return
+      }
+    }
+  }
+
+  return (
+    <div className="w-full mt-12">
+      <button className="rounded-none bg-green-600 p-4 text-white mb-8 font-bold" onClick={() => openModal('normal')}>+</button>
+      {
+        isLoading ? (<h1>Por favor aguarde</h1>) : (
+          <div className="overflow-x-auto mx-auto">
+            <div className="w-full min-w-full flex flex-row flex-wrap gap-4 items-center justify-start">
+              {
+                data.data.data.map((cat: any) => (
+                  <div key={cat.idCategoria} className="bg-blue-800 w-1/4 rounded-md p-4">
+                    <h1 className=" bg-white p-2 text-center text-blue-800 text-xl font-bold mb-4">{cat.nomeCategoria}</h1>
+                    <hr className="my-4 border-black" />
+                    <div className="flex justify-start">
+                      <button className="bg-blue-900 text-white py-2 px-4 mr-2" onClick={() => openModal('edit', cat)}>
+                        Editar dados
+                      </button>
+                      <button className="bg-blue-800 border border-cyan-300 text-white py-2 px-4 " onClick={() => openModal('delete', cat)}>
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+            <div className='mx-auto gap-6 p-2 mt-2 flex flex-row items-center justify-center'>
+              <p>Total elementos: {data.data.paginator.totalCurrentResults}</p>
+              <div className='flex flex-row items-center gap-2 justify-center'>
+                <AiOutlineArrowLeft className='cursor-pointer' onClick={() => setPagina((pagina > 0) ? pagina - 1 : 0)} />
+                <input type="number" className='border p-2 outline-none' min={0} defaultValue={10} onChange={(e) => setPorPagina(+e.target.value)} />
+                <AiOutlineArrowRight className='cursor-pointer' onClick={() => setPagina(pagina + 1)} />
+              </div>
+              <p>Página: {pagina}</p>
+            </div>
+          </div>
+        )
+      }
+
+
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal('normal')}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex h-screen items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Adicionar uma categoria
+                  </Dialog.Title>
+                  <div className="mt-2 h-full">
+                    <p className="text-sm text-gray-500 mb-8">
+                      Preencha por favor todos os campos
+                    </p>
+                    <FormularioCategoria />
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      <Transition appear show={isOpenEdit} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal('edit')}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Editar uma categoria
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      Editar dados da categoria {selectedCategoria != null ? selectedCategoria.nomeCategoria : null}
+                    </p>
+                  </div>
+                  <FormularioEditarCategoria idCategoria={selectedCategoria != null ? selectedCategoria : null} />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      <Transition appear show={isOpenDelete} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal('delete')}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Eliminar categoria
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      Deseja eliminar esta categoria ?
+                    </p>
+                    <div className='w-full mt-6 flex flex-row gap-2 items-center justify-start'>
+                      <button className="rounded-none bg-green-600 p-2 text-white mb-8 font-bold" onClick={async () => eliminarCategoria(selectedCategoria.idCategoria)}>Sim</button>
+                      <button className="rounded-none bg-red-600 p-2 text-white mb-8 font-bold" onClick={() => closeModal('delete')}>Não</button>
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </div>
+  );
+};
+
+export const CardListArtistas = () => {
+  const sq = useStoreState((state: any) => state.sq)
+  const roteador = useRouter()
+  const [selectedArtista, setSelectedArtista] = useState<any>({})
+  const [pagina, setPagina] = useState(0)
+  const [porPagina, setPorPagina] = useState(10)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenEdit, setIsOpenEdit] = useState(false)
+  const [isOpenDelete, setIsOpenDelete] = useState(false)
+  const { data, isLoading } = useQuery({
+    queryKey: ['fetchArtistasInside', pagina, porPagina, sq],
+    queryFn: async () => await fetchArtistasParam(pagina, porPagina, sq),
+    keepPreviousData: true
+  });
+
+  function closeModal(type: 'normal' | 'edit' | 'delete') {
+    switch (type) {
+      case 'normal':
+        setIsOpen(false)
+        break
+      case 'edit':
+        setIsOpenEdit(false)
+        break
+      case 'delete':
+        setIsOpenDelete(false)
+        break
+    }
+  }
+
+  function openModal(type: 'normal' | 'edit' | 'delete', artista?: any) {
+    switch (type) {
+      case 'normal':
+        setIsOpen(true)
+        break
+      case 'edit':
+        setIsOpenEdit(true)
+        setSelectedArtista(artista)
+        break
+      case 'delete':
+        setIsOpenDelete(true)
+        setSelectedArtista(artista)
+        break
+    }
+  }
+
+  async function eliminarArtista(idArtista: string) {
+    try {
+      if (selectedArtista != null) {
+        const incomingResponse = await axios.delete(`http://localhost:3000/api/artistas/${idArtista}`)
+        toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+        return roteador.reload()
+      }
+    } catch (err: any) {
+      console.error(err)
+      if (err.name === 'AxiosError') {
+        toast(err.response.data.message, { type: 'error', position: 'bottom-right' })
+        return
+      }
+    }
+  }
+
+  return (
+    <div className="w-full mt-12">
+      {
+        isLoading ? (<h1>Por favor aguarde</h1>) : (
+          <div className="overflow-x-auto mx-auto">
+            <div className="w-full min-w-full flex flex-row flex-wrap gap-4 items-center justify-start">
+              {
+                data.data.map((artista: any) => (
+                  <div key={artista.idArtista} className="bg-blue-800 h-2/4	 w-2/5 rounded-md p-4">
+                    <h1 className=" bg-white p-2 text-center text-blue-800 text-xl font-bold mb-4">{artista.nomeArtistico}</h1>
+                    <hr className="my-4 border-black" />
+                    <div className="mb-8 flex flex-row items-center gap-4 p-2 text-xl text-white font-bold">
+                      <AiFillHome
+                        className=" text-white"
+                        size={20}
+                      />
+                      <span className="mr-2">{artista.nomeProvincia}</span>
+                    </div>
+                    <div className="mb-8 flex flex-row items-center gap-4 p-2 text-xl text-white font-bold">
+                      <AiFillCalendar
+                        className=" text-white"
+                        size={20}
+                      />
+                      <span className="mr-2">{new Date(artista.dataNascimento).toLocaleString('pt', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                    </div>
+                    <div className="mb-8 flex flex-row items-center gap-4 p-2 text-xl text-white font-bold">
+                      <AiFillPhone
+                        className=" text-white"
+                        size={20}
+                      />
+                      <span className="mr-2">{artista.telefone}</span>
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                      <span className="mr-2 text-white text-xl font-bold">Músicas</span>
+                      {
+                        artista.Musica.map((musica: any) => (
+                          <div key={musica.idMusica} className="mb-8 flex flex-row items-center gap-4 p-2 text-xl text-white font-bold">
+                            <BsFillFileMusicFill
+                              className=" text-white"
+                              size={20}
+                            />
+                            <Link href={musica.link_musica}>
+                              <span className="mr-2">{musica.titulo}</span>
+                            </Link>
+                          </div>
+                        ))
+                      }
+                    </div>
+                    {
+                      (artista.categorias.length > 0) ? (
+                        <div className='flex flex-col gap-2'>
+                          <span className="mr-2 text-white text-xl font-bold">Categorias a concorrer</span>
+                          {
+                            artista.categorias.map((categoria: any) => (
+                              <div key={categoria.idCategoria} className="mb-8 flex flex-row items-center gap-4 p-2 text-xl text-white font-bold">
+                                <BiCategory
+                                  className=" text-white"
+                                  size={20}
+                                />
+                                <span className="mr-2">{categoria.nomeCategoria}</span>
+                              </div>
+                            ))
+                          }
+                        </div>
+                      ) : null
+                    }
+                    <div className="flex justify-start">
+                      <button className="bg-blue-900 text-white py-2 px-4 mr-2" onClick={() => openModal('edit', artista)}>
+                        Editar dados
+                      </button>
+                      <button className="bg-blue-800 border border-cyan-300 text-white py-2 px-4 " onClick={() => openModal('delete', artista)}>
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+            <div className='mx-auto gap-6 p-2 mt-2 flex flex-row items-center justify-center'>
+              <p>Total elementos: {data.paginator.totalCurrentResults}</p>
+              <div className='flex flex-row items-center gap-2 justify-center'>
+                <AiOutlineArrowLeft className='cursor-pointer' onClick={() => setPagina((pagina > 0) ? pagina - 1 : 0)} />
+                <input type="number" className='border p-2 outline-none' min={0} defaultValue={10} onChange={(e) => setPorPagina(+e.target.value)} />
+                <AiOutlineArrowRight className='cursor-pointer' onClick={() => setPagina(pagina + 1)} />
+              </div>
+              <p>Página: {pagina}</p>
+            </div>
+          </div>
+        )
+      }
+
+      <Transition appear show={isOpenEdit} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal('edit')}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Editar um artista
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      Editar dados do artista {selectedArtista != null ? selectedArtista.nomeArtistico : null}
+                    </p>
+                  </div>
+                  <FormularioArtistaEditar idArtista={selectedArtista != null ? selectedArtista : null} />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      <Transition appear show={isOpenDelete} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal('delete')}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Eliminar artista
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      Deseja eliminar esta artista ?
+                    </p>
+                    <div className='w-full mt-6 flex flex-row gap-2 items-center justify-start'>
+                      <button className="rounded-none bg-green-600 p-2 text-white mb-8 font-bold" onClick={async () => eliminarArtista(selectedArtista.idArtista)}>Sim</button>
                       <button className="rounded-none bg-red-600 p-2 text-white mb-8 font-bold" onClick={() => closeModal('delete')}>Não</button>
                     </div>
                   </div>

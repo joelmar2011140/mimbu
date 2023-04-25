@@ -12,7 +12,7 @@ import { prismaCategorias } from "../categorias/categorias.prisma";
 import { prismaClient } from "@/lib/prisma.instance";
 
 export async function listarArtistas(pagina: number, porPagina: number, sq?: string): Promise<IResultPaginated> {
-  const artistas = await prismaArtistas.findMany({ include: { Edicao: true, Musica: true, usuario: { select: { email: true, genero: true } } } })
+  const artistas = await prismaArtistas.findMany({ include: { Edicao: true, categorias: true, Musica: true, usuario: { select: { email: true, genero: true } } } })
   const listaDeArtistas = (sq != null) ? resultadoPaginado(pesquisar(artistas, sq, ['nomeArtistico', 'categorias.nomeCategoria']), pagina, porPagina) : resultadoPaginado(artistas, pagina, porPagina)
   return listaDeArtistas
 }
@@ -53,7 +53,7 @@ export async function registarArtista(params: IAdicionarArtista): Promise<ISuces
   }
   const artista = await prismaArtistas.create({
     include: {
-      usuario: { 
+      usuario: {
         select: { role: true }
       }
     },
@@ -142,6 +142,14 @@ export async function atualizarArtista(idArtista: string, params: IAtualizarArti
   const artista = await prismaArtistas.findUnique({ where: { idArtista } })
   if (artista == null) {
     throw new ApiError('APIERROR', 'Certifique-se que escolheu o artista correto', 404)
+  }
+  if (params.dataNascimento != null) {
+    const hoje = moment()
+    const aniversario = moment(params.dataNascimento)
+    const idade = hoje.diff(aniversario, "years")
+    if (idade < 18) {
+      throw new ApiError('APIERROR', 'Não pode concorrer pois é menor de 18 anos de idade', 422)
+    }
   }
   if (params.imagemPerfil != null) {
     deleteFile(artista.imagemPerfil)
