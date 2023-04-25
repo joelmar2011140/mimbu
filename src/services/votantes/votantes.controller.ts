@@ -72,7 +72,7 @@ export async function criarVotanteHttp (req: NextApiRequest, res: NextApiRespons
   try {
     const data = await validarRegistoVotante.validateAsync(req.body)
     const response: any = await criarVotante(data)
-    const token = jwt.sign({ sub: response.data.usuario.idUsuario }, 'mimbu')
+    const token = jwt.sign({ sub: response.data.usuario.idUsuario }, 'mimbu')    
     const cookie = serialize('jwt', JSON.stringify({ token, role: response.data.usuario.role }), { path: '/', httpOnly: true })
     res.setHeader('Set-Cookie', cookie)
     return res.status(response.status).json(response)

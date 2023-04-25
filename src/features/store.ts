@@ -7,6 +7,7 @@ export const store = createStore(persist({
   votante: {
     biVotante: ''
   },
+  artista: {},
   clearEdicao: action((state, payload) => {
     return {
       ...state,
@@ -26,6 +27,7 @@ export const store = createStore(persist({
     return {
       ...state,
       enderecoBlockChain: '',
+      artista: {},
       votante: {
         biVotante: ''
       },
@@ -35,6 +37,12 @@ export const store = createStore(persist({
     return {
       ...state,
       edicao: payload
+    }
+  }),
+  setArtista: action((state, payload) => {
+    return {
+      ...state,
+      artista: payload
     }
   }),
   setVotante: action((state, payload) => {

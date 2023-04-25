@@ -12,9 +12,9 @@ export async function login(req: NextApiRequest, res: NextApiResponse) {
       res.status(401).send("Email ou senha inválida");
       return
     }
-    const cookie = serialize('jwt', JSON.stringify(payload), { path: '/', httpOnly: true })
+    const cookie = serialize('jwt', JSON.stringify({ token: payload.token, role: payload.role }), { path: '/', httpOnly: true })
     res.setHeader('Set-Cookie', cookie)
-    return res.status(201).json({ message: 'Seja bem-vindo' })
+    return res.status(201).json({ message: 'Seja bem-vindo', token: payload.token, role: payload.role })
   } catch (err: any) {
     console.log(err)
     if (err.nomeErro === 'APIERROR') {

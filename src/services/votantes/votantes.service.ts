@@ -48,7 +48,7 @@ export async function criarVotante(params: ICriarVotante): Promise<ISucesso | IE
   const senhaEncriptada = await hash(bilheteDeIdentidade, saltos)
   const votante = await prismaVotante.create({
     include: {
-      usuario: { select: { idUsuario: true } }
+      usuario: true
     },
     data: {
       bilheteDeIdentidade,

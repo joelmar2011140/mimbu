@@ -3,7 +3,6 @@ import useBlockChain from "@/hooks/useBlockchain";
 import { StandardLayout } from "@/layouts/StandardLayout";
 import { fetchEdicao } from "@/lib/fetch.functions";
 import { useStoreActions } from "easy-peasy";
-import moment from "moment";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -38,7 +37,7 @@ export default function SingleEdicaoPage({ edicao }: any) {
         return
       })
     }
-  }, [blockChain])
+  }, [blockChain, clearAll, roteador])
 
   return (
     <StandardLayout tituloDaPagina={`Edição ${edicao.nomeEdicao}`} descricao="Mimbu">

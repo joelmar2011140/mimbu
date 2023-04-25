@@ -11,9 +11,6 @@ import { useEffect } from 'react';
 import { loginUser } from '@/lib/create.functions';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  console.log(ctx.req.cookies)
-  const jwt = ctx.req.cookies.jwt
-  console.log(jwt)
   if (ctx.req.cookies.jwt != null) {
     return {
       redirect: {
@@ -65,7 +62,6 @@ export default function LoginPage() {
       // Solicitar conta
       if (enderecoBlockChain.length) {
         blockChain.provider.request({ method: 'eth_requestAccounts' }).then((conta: any) => {
-          console.log(conta)
           setEndereco(conta[0])
         }).catch((err: any) => {
           clearAll()
@@ -85,7 +81,7 @@ export default function LoginPage() {
         })
       }
     }
-  }, [enderecoBlockChain, blockChain])
+  }, [enderecoBlockChain, blockChain, clearAll, setEndereco])
 
   const onSubmit: SubmitHandler<any> = async (data, e) => {
     e?.preventDefault()
@@ -97,6 +93,13 @@ export default function LoginPage() {
         console.log(incomingResponse)
         if (incomingResponse.status === 401 || incomingResponse.status === 422) {
           return toast(incomingResponse.message, { type: 'error', position: 'bottom-right' })
+        }
+        if (incomingResponse.role === 'admin') {
+          toast(incomingResponse.message, { type: 'success', position: 'bottom-right' })
+          return roteador.replace('/panel')
+        }  if (incomingResponse.role === 'artista') {
+          toast(incomingResponse.message, { type: 'success', position: 'bottom-right' })
+          return roteador.replace('/panel/artistas/perfil')
         }
         toast(incomingResponse.message, { type: 'success', position: 'bottom-right' })
         return roteador.replace('/')

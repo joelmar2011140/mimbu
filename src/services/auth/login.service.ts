@@ -43,3 +43,15 @@ export async function perfilVotante (token: string) {
     console.error('Erro aqui: ', err)
   }
 }
+
+export async function perfilArtista (token: string) {
+  try {
+    const payload = jwt.verify(token, 'mimbu')
+    const artista = await prismaClient.usuario.findUnique({ where: { idUsuario: payload.sub as string }, include: { Artista: true } })
+    return {
+      artista
+    }
+  } catch (err: any) {
+    console.error('Erro aqui: ', err)
+  }
+}

@@ -20,6 +20,21 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     }
   }
   const token = JSON.parse(ctx.req.cookies.jwt).token
+  if (JSON.parse(ctx.req.cookies.jwt).role === 'admin') {
+    return {
+      redirect: {
+        permanent: true,
+        destination: `/panel`
+      },
+    }
+  } else  if (JSON.parse(ctx.req.cookies.jwt).role === 'artista') {
+    return {
+      redirect: {
+        permanent: true,
+        destination: `/panel/artistas/perfil`
+      },
+    }
+  }
   const votante = await perfilVotante(token)
   return {
     props: {
@@ -38,7 +53,7 @@ export default function EdicoesPage(props: any) {
 
   useEffect(() => {
     limparEdicao()
-  }, [])
+  }, [limparEdicao])
 
   useEffect(() => {
     setVotante(props.votante)
@@ -54,16 +69,21 @@ export default function EdicoesPage(props: any) {
         return
       })
     }
-  }, [blockChain])
+  }, [blockChain, clearAll , roteador])
 
   return (
     <StandardLayout tituloDaPagina='Lista de edições' descricao='Mimbu'>
       <div className="flex justify-center items-center  min-h-screen">
         {
           isLoading ? (<Loading />) : (
-            <div className="max-w-7xl p-6 bg-black w-full px-4 sm:px-6 lg:px-8">
-              {(data.length === 0) ? <h1 className='text-white text-2xl text-center'>Nã existem concursos😔</h1> : <ListaEdicoes data={data} />}
-            </div>
+            <>
+            {(data.length === 0) ? (<h1 className='text-black text-6xl text-center'>De momento não existem concursos😔</h1>) : (
+               <div className="max-w-7xl p-6 bg-black w-full px-4 sm:px-6 lg:px-8">
+               <ListaEdicoes data={data} />
+             </div>
+            )}
+            </>
+
           )
         }
       </div>

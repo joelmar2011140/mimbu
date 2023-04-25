@@ -4,7 +4,6 @@ import Tabs from '@/components/Tabs';
 import { GetServerSidePropsContext } from 'next';
 
 export async function getServerSideProps (ctx: GetServerSidePropsContext) {
-  console.log(ctx.req.cookies)
   if (ctx.req.cookies.jwt != null) {
     return {
       redirect: {

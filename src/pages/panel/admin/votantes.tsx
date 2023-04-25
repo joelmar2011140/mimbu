@@ -2,8 +2,34 @@ import { TableVotantes } from '@/components/Tabela'
 import useBlockChain from '@/hooks/useBlockchain'
 import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { useStoreActions } from 'easy-peasy'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
+
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  if (ctx.req.cookies.jwt == null) {
+    return {
+      redirect: {
+        permanent: true,
+        destination: `/login`
+      },
+    }
+  }
+  const jwt = JSON.parse(ctx.req.cookies.jwt)
+  if (jwt.role !== 'admin') {
+    return {
+      redirect: {
+        permanent: true,
+        destination: `/`
+      },
+    }
+  }
+  return {
+    props: {
+      
+    }
+  }
+}
 
 export default function VotantesPage() {
   const { blockChain } = useBlockChain()
@@ -19,7 +45,7 @@ export default function VotantesPage() {
         return
       })
     }
-  }, [blockChain])
+  }, [blockChain, clearAll, roteador])
 
   return (
     <DashboardLayout>
