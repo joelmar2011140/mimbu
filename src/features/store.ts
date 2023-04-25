@@ -3,6 +3,7 @@ import { action, createStore, persist } from 'easy-peasy'
 export const store = createStore(persist({
   edicao: {},
   enderecoBlockChain: '',
+  sq: '',
   votante: {
     biVotante: ''
   },
@@ -49,6 +50,12 @@ export const store = createStore(persist({
     return {
       ...state,
       enderecoBlockChain: payload
+    }
+  }),
+  setSq: action((state, payload) => {
+    return {
+      ...state,
+      sq: payload
     }
   })
 }, { storage: 'localStorage' }), { devTools: true })

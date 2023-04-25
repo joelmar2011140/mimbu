@@ -4,12 +4,12 @@ import { FaSearch } from "react-icons/fa"
 import { BsNewspaper } from 'react-icons/bs'
 import { BiCategory } from 'react-icons/bi'
 import { GiMusicalNotes, GiVote } from 'react-icons/gi'
-import { useStoreState } from "easy-peasy";
+import { useStoreState, useStoreActions } from "easy-peasy";
 import Link from "next/link";
 import { FiEdit } from "react-icons/fi";
 
 export function DashboardLayout({ children }: IProvider) {
-  const estado = useStoreState((state: any) => state)
+  const setSq = useStoreActions((action: any) => action.setSq)
 
   const titulo: string = `Mimbu - Painel administrativo`
   return (
@@ -30,7 +30,7 @@ export function DashboardLayout({ children }: IProvider) {
                   className=" text-gray-500 hover:text-white"
                   size={20}
                 />
-                <Link href="/panel/noticias" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
+                <Link href="/panel/admin/noticias" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
                   <span className="mr-2">Publicar notícia</span>
                 </Link>
               </li>
@@ -39,7 +39,7 @@ export function DashboardLayout({ children }: IProvider) {
                   className=" text-gray-500 hover:text-white"
                   size={20}
                 />
-                <Link href="/panel/edicoes" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
+                <Link href="/panel/admin/edicoes" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
                   <span className="mr-2 ">Edições</span>
                 </Link>
               </li>
@@ -48,7 +48,7 @@ export function DashboardLayout({ children }: IProvider) {
                   className=" text-gray-500 hover:text-white"
                   size={20}
                 />
-                <Link href="/panel/categorias" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
+                <Link href="/panel/admin/categorias" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
                   <span className="mr-2">Categorias</span>
                 </Link>
               </li>
@@ -57,7 +57,7 @@ export function DashboardLayout({ children }: IProvider) {
                   className=" text-gray-500 hover:text-white"
                   size={20}
                 />
-                <Link href="/panel/artistas" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
+                <Link href="/panel/admin/artistas" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
                   <span className="mr-2">Artistas</span>
                 </Link>
               </li>
@@ -66,7 +66,7 @@ export function DashboardLayout({ children }: IProvider) {
                   className=" text-gray-500 hover:text-white"
                   size={20}
                 />
-                <Link href="/panel/votantes" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
+                <Link href="/panel/admin/votantes" className="flex items-center text-gray-500 text-2xl font-normal hover:text-white">
                   <span className="mr-2">Votantes</span>
                 </Link>
               </li>
@@ -82,6 +82,7 @@ export function DashboardLayout({ children }: IProvider) {
               <input
                 type="search"
                 placeholder="Pesquisar aqui"
+                onChange={(e) => setSq(e.target.value)}
                 className="bg-white border-none px-4 py-2 pr-10 rounded-lg focus:outline-none w-full"
               />
               <FaSearch

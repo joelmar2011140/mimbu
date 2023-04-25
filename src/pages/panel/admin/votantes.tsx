@@ -1,4 +1,4 @@
-import { TableVotantes } from '@/components/Tables/Tabela'
+import { TableVotantes } from '@/components/Tabela'
 import useBlockChain from '@/hooks/useBlockchain'
 import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { useStoreActions } from 'easy-peasy'

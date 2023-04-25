@@ -5,7 +5,7 @@ import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import Table from '@/components/Tables/Tabela'
+import Table from '@/components/Tabela'
 
 // export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 //   if (ctx.req.cookies.jwt == null) {

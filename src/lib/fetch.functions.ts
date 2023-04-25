@@ -22,22 +22,46 @@ export async function fetchCategorias() {
 
 
 export async function fetchEdicoesParam(pagina: number, porPagina: number, sq?: string) {
+  if (sq != null && sq?.length > 0) {
+    const raw = await fetch(`/api/edicoes?pagina=${pagina}&porPagina=${porPagina}&sq=${sq}`)
+    const data = await raw.json()
+    return data
+  }
   const raw = await fetch(`/api/edicoes?pagina=${pagina}&porPagina=${porPagina}`)
   const data = await raw.json()
   return data
 }
 
 export async function fetchCategoriasParam(pagina: number, porPagina: number, sq?: string) {
+  if (sq != null && sq?.length > 0) {
+    const raw = await fetch(`/api/categorias?pagina=${pagina}&porPagina=${porPagina}&sq=${sq}`)
+    const data = await raw.json()
+    return data
+  }
   const raw = await fetch(`/api/categorias?pagina=${pagina}&porPagina=${porPagina}`)
   const data = await raw.json()
   return data
 }
 
 export async function fetchVotantesParam(pagina: number, porPagina: number, sq?: string) {
+  if (sq != null && sq?.length > 0) {
+    const raw = await fetch(`/api/votantes?pagina=${pagina}&porPagina=${porPagina}&sq=${sq}`)
+    const data = await raw.json()
+    return data
+  }
   const raw = await fetch(`/api/votantes?pagina=${pagina}&porPagina=${porPagina}`)
   const data = await raw.json()
-  console.log(data);
-  
+  return data
+}
+
+export async function fetchNoticiasParam(pagina: number, porPagina: number, sq?: string) {
+  if (sq != null && sq?.length > 0) {
+    const raw = await fetch(`/api/noticias?pagina=${pagina}&porPagina=${porPagina}&sq=${sq}`)
+    const data = await raw.json()
+    return data
+  }
+  const raw = await fetch(`/api/noticias?pagina=${pagina}&porPagina=${porPagina}`)
+  const data = await raw.json()
   return data
 }
 

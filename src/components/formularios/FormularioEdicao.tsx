@@ -60,6 +60,111 @@ export default function FormularioEdicao() {
   )
 }
 
+export function FormularioNoticia() {
+  const roteador = useRouter()
+  const [errObj, setObject] = useState({ isLoading: false, errMsg: '' })
+  const { register, handleSubmit, formState: { errors } } = useForm()
+
+  const onSubmit: SubmitHandler<any> = async (data, e) => {
+    e?.preventDefault()
+    const formData = new FormData()
+    formData.append('imagemDaNoticia', data.imagemDaNoticia[0])
+    formData.append('tituloDaNoticia', data.tituloDaNoticia)
+    formData.append('dataDaNoticia', data.dataDaNoticia)
+    formData.append('conteudo', data.dataTermino)
+    try {
+      const incomingResponse = await axios.post('http://localhost:3000/api/noticias', formData)
+      setObject({ isLoading: false, errMsg: '' })
+      toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+      return roteador.reload()
+    } catch (err: any) {
+      console.error(err)
+      if (err.name === 'AxiosError') {
+        toast(err.response.data.message, { type: 'error', position: 'bottom-right' })
+        return
+      }
+    }
+  }
+
+  return (
+    <>
+      <Input name="tituloDaNoticia" type="text" label="Título da notícia" placeholder="Título da notícia" register={register} />
+      <p className="text-red-700">{errors.tituloDaNoticia ? "Insira o título desta notícia por favor" : null}</p>
+      <Input name="dataDaNoticia" type="date" label="Data da notícia" placeholder="Data da notícia" register={register} />
+      <p className="text-red-700">{errors.dataDaNoticia ? "Insira a data desta notícia" : null}</p>
+      <Input name="imagemDaNoticia" type="file" register={register} label="Imagem da notícia" placeholder="Imagem da notícia" />
+      <p className="text-red-700">{errors.imagemDaNoticia ? "Insira uma imagem para esta notícia por favor" : null}</p>
+      <button onClick={handleSubmit(onSubmit)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Adicionar uma notícia</button>
+    </>
+
+  )
+}
+
+export function FormularioNoticiaEditar({ idEdicao }: any) {
+  const roteador = useRouter()
+  const [errObj, setObject] = useState({ isLoading: false, errMsg: '' })
+  const { register, handleSubmit, formState: { errors } } = useForm()
+  
+  const onSubmit: SubmitHandler<any> = async (data, e) => {
+    e?.preventDefault()
+    const formData = new FormData()
+    try {
+      if (data.imagemDaNoticia.length > 0) {
+        formData.append('imagemDaNoticia', data.imagemDaNoticia[0])
+        if (idEdicao != null) {
+          const incomingResponse = await axios.patch(`http://localhost:3000/api/noticias/${idEdicao.idEdicao}`, formData)
+          setObject({ isLoading: false, errMsg: '' })
+          toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+          return roteador.reload()
+        }
+      } if (data.dataDaNoticia.length > 0) {
+        formData.append('dataDaNoticia', data.dataDaNoticia)
+        if (idEdicao != null) {
+          const incomingResponse = await axios.patch(`http://localhost:3000/api/noticias/${idEdicao.idEdicao}`, formData)
+          setObject({ isLoading: false, errMsg: '' })
+          toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+          return roteador.reload()
+        }
+      } if (data.tituloDaNoticia.length > 0) {
+        formData.append('tituloDaNoticia', data.dataTermino)
+        if (idEdicao != null) {
+          const incomingResponse = await axios.patch(`http://localhost:3000/api/noticias/${idEdicao.idEdicao}`, formData)
+          setObject({ isLoading: false, errMsg: '' })
+          toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+          return roteador.reload()
+        }
+      } if (data.tituloDaNoticia.length > 0) {
+        formData.append('tituloDaNoticia', data.tituloDaNoticia)
+        if (idEdicao != null) {
+          const incomingResponse = await axios.patch(`http://localhost:3000/api/noticias/${idEdicao.idEdicao}`, formData)
+          setObject({ isLoading: false, errMsg: '' })
+          toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+          return roteador.reload()
+        }
+      }
+
+    } catch (err: any) {
+      console.error(err)
+      if (err.name === 'AxiosError') {
+        toast(err.response.data.message, { type: 'error', position: 'bottom-right' })
+        return
+      }
+    }
+  }
+
+  return (
+    <>
+      <Input name="tituloDaNoticia" type="text" label="Título da notícia" placeholder="Título da notícia" register={register} />
+      <p className="text-red-700">{errors.tituloDaNoticia ? "Insira o título desta notícia por favor" : null}</p>
+      <Input name="dataDaNoticia" type="date" label="Data da notícia" placeholder="Data da notícia" register={register} />
+      <p className="text-red-700">{errors.dataDaNoticia ? "Insira a data desta notícia" : null}</p>
+      <Input name="imagemDaNoticia" type="file" register={register} label="Imagem da notícia" placeholder="Imagem da notícia" />
+      <p className="text-red-700">{errors.imagemDaNoticia ? "Insira uma imagem para esta notícia por favor" : null}</p>
+      <button onClick={handleSubmit(onSubmit)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Editar uma notícia</button>
+    </>
+
+  )
+}
 
 export function FormularioEdicaoEditar({ idEdicao }: any) {
   console.log(idEdicao)
