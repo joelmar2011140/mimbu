@@ -111,7 +111,7 @@ const Table = () => {
                       <tr key={edicao.idEdicao}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="h-16 flex items-center">
-                            <Link className='underline' href={`/panel/edicoes/${edicao.idEdicao}`}>{edicao.nomeEdicao}</Link>
+                            <Link className='underline' href={`/panel/admin/edicoes/${edicao.idEdicao}`}>{edicao.nomeEdicao}</Link>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

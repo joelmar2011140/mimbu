@@ -9,7 +9,7 @@ import { useEffect } from "react";
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const edicao = await fetchEdicao(ctx.params.idEdicao)
-  console.log(ctx.req.cookies)
+
   if (ctx.req.cookies.jwt == null) {
     return {
       redirect: {

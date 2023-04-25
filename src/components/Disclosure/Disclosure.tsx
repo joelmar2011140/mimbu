@@ -33,13 +33,13 @@ const Disclosure = ({ categorias }: any) => {
       }
     };
     fetchVotes();
-  }, [selectedCategory]);
+  }, [selectedCategory, votoDeUmArtista]);
 
   const handleCategoryClick = (categoria: any) => setSelectedCategory(categoria);
 
-  function votar(enderecoArtista: string, bi: string, categoria: string) {
+  function votar(enderecoArtista: string, bi: string, nomeEdicao: string, categoria: string) {
     if (blockChain != null && enderecoBlockChain.length > 0) {
-      blockChain.contrato.votar(enderecoArtista, bi, categoria, { from: enderecoBlockChain }).then((result) => {
+      blockChain.contrato.votar(enderecoArtista, bi, nomeEdicao, categoria, { from: enderecoBlockChain }).then((result) => {
         console.log('votar', result)
         roteador.reload()
       }).catch((err: any) => {
@@ -62,7 +62,7 @@ const Disclosure = ({ categorias }: any) => {
   async function votoDeUmArtista(enderecoArtista: string) {
     let votes
     if (blockChain != null && enderecoBlockChain.length > 0) {
-      const votos = await blockChain.contrato.votosDeUmArtista(enderecoArtista)
+      const votos = await blockChain.contrato.numeroDeVotosArtistaCategoriaEdicao(enderecoArtista, nomeEdicao, selectedCategory.nomeCategoria)
       votes = votos.toNumber()
     }
     return votes
