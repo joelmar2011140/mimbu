@@ -71,4 +71,28 @@ contract Votacao {
   function votosPorCategoria(string memory _edicao, string memory _categoria) public view returns (uint256) {
     return edicoes[_edicao][_categoria].numeroDeVotos;
   }
+
+  function removerArtista(address _enderecoArtista, string memory _nomeEdicao, string memory _nomeCategoria) public {
+    bool artistExists = false;
+    uint256 artistIndex;
+    for (uint256 i = 0; i < totalArtistas; i++) {
+        if (artistas[i].endereco == _enderecoArtista &&
+            keccak256(bytes(artistas[i].nomeCategoria)) == keccak256(bytes(_nomeCategoria)) &&
+            keccak256(bytes(artistas[i].edicao)) == keccak256(bytes(_nomeEdicao))) {
+            artistExists = true;
+            artistIndex = i;
+            break;
+        }
+    }
+    require(artistExists, "Artista nao encontrado nesta edicao e categoria");
+    
+    Artista memory artista = artistas[artistIndex];
+    delete artistas[artistIndex];
+    totalArtistas--;
+    totalVotos -= artista.numeroDeVotos;
+    estaEmEdicao[_enderecoArtista][_nomeEdicao] = false;
+    jaArtistaAdicionadoEdicaoCategoria[_enderecoArtista][_nomeEdicao][_nomeCategoria] = false;
+    edicoes[_nomeEdicao][_nomeCategoria].numeroDeVotos -= artista.numeroDeVotos;
+    edicoes[_nomeEdicao][_nomeCategoria].votosPorEdicaoECategoria[_nomeEdicao][_nomeCategoria] -= artista.numeroDeVotos;
+}
 }

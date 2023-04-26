@@ -3,6 +3,7 @@ import { ILoginParams } from "./login.types";
 import jwt from 'jsonwebtoken'
 import ApiError from "@/utils/APIError";
 import { compare } from 'bcrypt'
+import { listarEdicoesParticipante } from "../artistas/artistas.service";
 
 interface ILogin {
   token: string
@@ -48,8 +49,12 @@ export async function perfilArtista (token: string) {
   try {
     const payload = jwt.verify(token, 'mimbu')
     const artista = await prismaClient.usuario.findUnique({ where: { idUsuario: payload.sub as string }, include: { Artista: true } })
+    const edicoes = await listarEdicoesParticipante(artista?.Artista[0].idArtista as string)
     return {
-      artista
+      artista: {
+        ...artista,
+        edicoes: edicoes.data.Edicao
+      }
     }
   } catch (err: any) {
     console.error('Erro aqui: ', err)

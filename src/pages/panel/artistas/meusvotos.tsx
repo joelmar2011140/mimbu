@@ -1,9 +1,8 @@
-import { showPath } from '@/components/Edicoes/SingleEdicao'
-import { TableForArtists } from '@/components/Tabela'
+import { CardLisEdicoes } from '@/components/Tabela'
 import useBlockChain from '@/hooks/useBlockchain'
 import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { perfilArtista } from '@/services/auth/login.service'
-import { useStoreActions, useStoreState } from 'easy-peasy'
+import { useStoreActions } from 'easy-peasy'
 import { useRouter } from 'next/router'
 import { GetServerSidePropsContext } from 'next/types'
 import React, { useEffect } from 'react'
@@ -51,12 +50,13 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         nomeDistrito: artista.artista?.Artista[0].nomeDistrito,
         nomeBairro: artista.artista?.Artista[0].nomeBairro,
         nomeRua: artista.artista?.Artista[0].nomeRua,
+        edicoes: artista.artista.edicoes
       }
     }
   }
 }
 
-export default function EdicoesArtistaPage({ artista }: any) {
+export default function MeusVotosArtistaPage({ artista }: any) {
   const { blockChain } = useBlockChain()
   const clearAll = useStoreActions((accao: any) => accao.clearAll)
   const setArtista = useStoreActions((accao: any) => accao.setArtista)
@@ -78,7 +78,7 @@ export default function EdicoesArtistaPage({ artista }: any) {
 
   return (
     <DashboardLayout>
-      <TableForArtists />
+      <CardLisEdicoes />
     </DashboardLayout>
   )
 }

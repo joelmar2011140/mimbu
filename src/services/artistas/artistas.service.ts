@@ -115,6 +115,34 @@ export async function listarUmArtista(idArtista: string): Promise<ISucesso> {
   }
 }
 
+export async function listarEdicoesParticipante(idArtista: string): Promise<ISucesso> {
+  const edicaoComCategoriaDoArtista = await prismaArtistas.findUnique({
+    where: {
+      idArtista
+    },
+    include: {
+      Edicao: {
+        include: {
+          categoria: {
+            where: {
+              artistas: {
+                some: {
+                  idArtista
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  return {
+    message: 'Artista listado com sucesso',
+    status: 200,
+    data: edicaoComCategoriaDoArtista
+  }
+}
+
 export async function eliminarUmArtista(idArtista: string): Promise<ISucesso> {
   const artista = await prismaArtistas.findUnique({ where: { idArtista }, include: { Musica: true } })
   if (artista == null) {

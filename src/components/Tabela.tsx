@@ -1,4 +1,4 @@
-import React, { useState, Fragment, ChangeEvent } from 'react';
+import React, { useState, Fragment, ChangeEvent, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react'
 import { AiFillCalendar, AiFillHome, AiFillPhone, AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai'
 import { useQuery } from 'react-query';
@@ -1436,6 +1436,194 @@ export const CardListArtistas = () => {
                     </p>
                     <div className='w-full mt-6 flex flex-row gap-2 items-center justify-start'>
                       <button className="rounded-none bg-green-600 p-2 text-white mb-8 font-bold" onClick={async () => eliminarArtista(selectedArtista.idArtista)}>Sim</button>
+                      <button className="rounded-none bg-red-600 p-2 text-white mb-8 font-bold" onClick={() => closeModal('delete')}>Não</button>
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </div>
+  );
+};
+
+export const CardLisEdicoes = () => {
+  const enderecoBlockChain = useStoreState((state: any) => state.enderecoBlockChain)
+  const [votosCategoria, setVotosCategoria] = useState([])
+  const edicoes = useStoreState((state: any) => state.artista.edicoes)
+  const idDoArtistaState = useStoreState((state: any) => state.artista.idArtista)
+  const { blockChain } = useBlockChain()
+  const roteador = useRouter()
+  const [selectedArtista, setSelectedArtista] = useState<any>({})
+  const [selectedCate, setSelectCate] = useState<any>({})
+  const [pagina, setPagina] = useState(0)
+  const [porPagina, setPorPagina] = useState(10)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenEdit, setIsOpenEdit] = useState(false)
+  const [isOpenDelete, setIsOpenDelete] = useState(false)
+
+  
+  function closeModal(type: 'normal' | 'edit' | 'delete') {
+    switch (type) {
+      case 'normal':
+        setIsOpen(false)
+        break
+      case 'edit':
+        setIsOpenEdit(false)
+        break
+      case 'delete':
+        setIsOpenDelete(false)
+        break
+    }
+  }
+
+  function openModal(type: 'normal' | 'edit' | 'delete', artista?: any, categoria?: string) {
+    switch (type) {
+      case 'normal':
+        setIsOpen(true)
+        break
+      case 'edit':
+        setIsOpenEdit(true)
+        setSelectedArtista(artista)
+        break
+      case 'delete':
+        setIsOpenDelete(true)
+        setSelectedArtista(artista)
+        setSelectCate(categoria)
+        break
+    }
+  }
+
+  console.log(selectedArtista)
+
+  async function eliminarArtista(idArtista: string) {
+    try {
+      if (Object.keys(selectedArtista).length > 0) {
+        const incomingResponse = await axios.patch(`http://localhost:3000/api/artistas/${idDoArtistaState}/sair`, { idEdicao: idArtista, idCategoria: selectedCate.idCategoria })
+        if (blockChain != null && enderecoBlockChain.length > 0) {
+          blockChain.contrato.removerArtista(enderecoBlockChain, idArtista, selectedCate.idCategoria, { from: enderecoBlockChain }).then((val) => {
+            console.log(val)
+            toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+            return roteador.reload()
+          })
+          
+        }
+        
+      }
+    } catch (err: any) {
+      console.error(err)
+      if (err.name === 'AxiosError') {
+        toast(err.response.data.message, { type: 'error', position: 'bottom-right' })
+        return
+      }
+    }
+  }
+
+  async function votosCategriaEdicao(enderecoArtista: string, edicao: string, categoria: string) {
+    let votes
+    if (blockChain != null && blockChain.contrato != null) {
+      const votos = await blockChain.contrato.numeroDeVotosArtistaCategoriaEdicao(enderecoArtista, edicao, categoria)
+      votes = votos.toNumber()  
+    }
+    return votes
+  }
+
+  useEffect(() => {
+    async function fetchVotosCategoria() {
+      if (Object.keys(selectedArtista).length > 0) {
+        const votos = await Promise.all(
+          selectedArtista.categoria.map(async (cat:any) => {
+            const totalVotos = await votosCategriaEdicao(enderecoBlockChain, edicoes.idEdicao, cat.nomeCategoria)
+            return { id: cat.idCategoria, totalVotos }
+          })
+        )
+        setVotosCategoria(votos)
+      }
+    }
+    fetchVotosCategoria()
+  }, [edicoes])
+
+  return (
+    <div className="w-full mt-12">
+      <h1 className='mb-6 text-2xl font-bold text-gray-600'>Edições a participar</h1>
+      {
+        (edicoes != null && edicoes.length === 0) ? (<h1 className='text-center'>Não está a concorrer em nenhuma categoria 😔</h1>) : (
+          <div className="overflow-x-auto mx-auto">
+            <div className="w-full min-w-full flex flex-row flex-wrap gap-4 items-center justify-start">
+              {
+                edicoes != null && edicoes.map((edicao: any) => (
+                  <div key={edicao.idEdicao} className="bg-blue-800 h-2/4	 w-2/5 rounded-md p-4">
+                    <h1 className=" bg-white p-2 text-center text-blue-800 text-xl font-bold mb-4">{edicao.nomeEdicao}</h1>
+                    <hr className="my-4 border-black" />
+                    {
+                      (edicao.categoria.length === 0) ? (<h1 className='text-white text-xl'>Não está a concorrer em nenhuma categoria 😔</h1>) : (
+                        <>
+                         { edicao.categoria.map((cat: any) => {
+                          const totalVotos = votosCategoria.find((v: any) => v.id === cat.idCategoria)?.totalVotos ?? 0
+                          return (
+                            <div key={cat.idCategoria} className="mb-8 flex flex-row items-center gap-4 p-2 text-xl text-white font-bold">
+                            <BiCategory
+                              className=" text-white"
+                              size={20}
+                            />
+                            <span className="mr-2">{cat.nomeCategoria} - votos: {totalVotos}</span>
+                            <button className="bg-blue-800 border border-cyan-300 text-white py-2 px-4 " onClick={() => openModal('delete', edicao, cat)}>Sair</button>
+                          </div>
+                          )
+                         }) }
+                        </>
+                      )
+                    }
+                    
+                 
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        )
+      }
+
+      <Transition appear show={isOpenDelete} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal('delete')}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Sair da edição
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      Quer deixar de participar desta edição ?
+                    </p>
+                    <div className='w-full mt-6 flex flex-row gap-2 items-center justify-start'>
+                      <button className="rounded-none bg-green-600 p-2 text-white mb-8 font-bold" onClick={async () => eliminarArtista(selectedArtista.idEdicao)}>Sim</button>
                       <button className="rounded-none bg-red-600 p-2 text-white mb-8 font-bold" onClick={() => closeModal('delete')}>Não</button>
                     </div>
                   </div>

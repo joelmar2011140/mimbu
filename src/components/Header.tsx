@@ -10,6 +10,7 @@ import { useStoreActions, useStoreState } from "easy-peasy";
 
 export function Header() {
   const votante = useStoreState((state: any) => state.votante)
+  const artista = useStoreState((state: any) => state.artista)
   const limpar = useStoreActions((accao: any) => accao.limpar)
   const roteador = useRouter()
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +33,7 @@ export function Header() {
           </button>
           <span className="text-sm ml-2 mr-2 font-bold">Menu</span>
         </div>
-        {votante.biVotante.length === 0 ? (
+        {(votante.biVotante.length === 0 && Object.keys(artista).length === 0) ? (
           <div className="flex items-center flex-row cursor-pointer" onClick={() => roteador.push('/login')}>
             <button>
               <FiLogIn className="h-6 w-6 text-gray-800" />
@@ -65,7 +66,7 @@ export function Header() {
               </Link>
             </li>
             <li className="mb-2">
-              {votante.biVotante.length > 0 ? (
+              {(votante.biVotante.length > 0 || Object.keys(artista).length > 0) ? (
                 <h1 className="cursor-pointer hover:text-white font-semibold text-xl text-pink-600  w-full p-2 hover:bg-pink-600" onClick={async () => logout()}>Sair</h1>
               ) : null}
             </li>
