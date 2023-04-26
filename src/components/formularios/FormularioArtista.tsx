@@ -21,9 +21,9 @@ export default function FormularioArtista() {
   const { data, isLoading } = useQuery('edicoes', fetchEdicoesUser)
   const rawCate = useQuery(['edicao', idEdicao], () => fetchEdicao(idEdicao))
 
-  function registarArtistaBlockChain(enderecoArtista: string, nome: string, categoria: string) {
+  function registarArtistaBlockChain(enderecoArtista: string, nomeEdicao: string, categoria: string) {
     if (blockChain != null && enderecoBlockChain.length > 0) {
-      blockChain.contrato.adicionarArtista(enderecoArtista, nome, categoria, { from: enderecoBlockChain }).catch((err: any) => {
+      blockChain.contrato.adicionarArtista(enderecoArtista, nomeEdicao, categoria, { from: enderecoBlockChain }).catch((err: any) => {
         console.log('erro', err)
         if (err.code === 4001) {
           return toast('Transação falhada, pois cancelou o registo', { type: 'error', position: 'bottom-right' })
@@ -58,7 +58,7 @@ export default function FormularioArtista() {
       if (enderecoBlockChain.length > 0) {
         const incomingResponse = await axios.post('http://localhost:3000/api/artistas', formData)
         setObject({ isLoading: false, errMsg: '' })
-        registarArtistaBlockChain(enderecoBlockChain, data.nomeArtistico, data.categoria)
+        registarArtistaBlockChain(enderecoBlockChain, idEdicao , data.categoria)
         toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
         return roteador.replace('/')
       }
@@ -121,7 +121,7 @@ export default function FormularioArtista() {
         })
       }
     }
-  }, [enderecoBlockChain, blockChain])
+  }, [enderecoBlockChain, blockChain, clearAll, setEndereco])
 
   return (
     <>
@@ -160,7 +160,7 @@ export default function FormularioArtista() {
       <p className="text-red-700">{errors.anoGravacao ? "Insira o ano de gravação da música por favor" : errors.generoMusica ? 'Insira o gênero da música' : null}</p>
       <label htmlFor='edicao' className="mb-2 text-lg font-medium">Seleccione uma edição</label>
       <select id='edicao' {...register('edicao', { required: true })} onChange={(e) => setIdEdicao(e.target.value)} className=" block appearance-none w-full bg-white hover:border-gray-500 pr-8 shadow leading-tight focus:shadow-outline  border-2 border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500">
-        <option value="" disabled>Selecione uma edição</option>
+        <option value="" >Selecione uma edição</option>
         {
           (data != null) ? data.map((edicao: any) => (<option key={edicao.idEdicao} value={edicao.idEdicao}>{edicao.nomeEdicao}</option>)) : null
         }
@@ -189,3 +189,5 @@ export default function FormularioArtista() {
 
   )
 }
+
+

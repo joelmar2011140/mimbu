@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, ChangeEvent } from 'react';
 import { Dialog, Transition } from '@headlessui/react'
 import { AiFillCalendar, AiFillHome, AiFillPhone, AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai'
 import { useQuery } from 'react-query';
@@ -13,6 +13,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useStoreState } from 'easy-peasy';
 import { BiCategory } from 'react-icons/bi';
+import useBlockChain from '@/hooks/useBlockchain';
 
 const Table = () => {
   const sq = useStoreState((state: any) => state.sq)
@@ -296,6 +297,234 @@ const Table = () => {
 };
 
 export default Table;
+
+
+
+export const TableForArtists = () => {
+  const sq = useStoreState((state: any) => state.sq)
+  const roteador = useRouter()
+  const { blockChain } = useBlockChain()
+  const enderecoBlockChain = useStoreState((state: any) => state.enderecoBlockChain)
+  const artistaId = useStoreState((state: any) => state.artista.idArtista)
+  const [selectedEdicao, setSelectedEdicao] = useState<any>({})
+  const [participacao, setParticipacao] = useState({ titulo: '', link_musica: '', ano_gravacao: 0, nomeGenero: '' })
+  const [selectedCategoria, setSelectedCategoria] = useState<any>({})
+  const [pagina, setPagina] = useState(0)
+  const [porPagina, setPorPagina] = useState(10)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenEdit, setIsOpenEdit] = useState(false)
+  const [isOpenDelete, setIsOpenDelete] = useState(false)
+  const { data, isLoading } = useQuery({
+    queryKey: ['fetchEdicoes', pagina, porPagina, sq],
+    queryFn: async () => await fetchEdicoesParam(pagina, porPagina, sq),
+    keepPreviousData: true
+  });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => setParticipacao({ ...participacao, [e.target.name]: e.target.value })
+
+  function registarArtistaBlockChain(enderecoArtista: string, nome: string, categoria: string) {
+    if (blockChain != null && enderecoBlockChain.length > 0) {
+      blockChain.contrato.adicionarArtista(enderecoArtista, nome, categoria, { from: enderecoBlockChain }).catch((err: any) => {
+        console.log('erro', err)
+        if (err.code === 4001) {
+          return toast('Transação falhada, pois cancelou o registo', { type: 'error', position: 'bottom-right' })
+        }
+      });
+    }
+  }
+
+  async function participar () {
+    try {
+
+      
+      const incomingData = {
+        ...participacao,
+        idCategoria: (Object.keys(selectedCategoria).length > 0) ? selectedCategoria.idCategoria : null,
+        idEdicao: (Object.keys(selectedEdicao).length > 0) ? selectedEdicao.idEdicao : null
+      }
+      const incomingResponse = await axios.patch(`http://localhost:3000/api/artistas/${artistaId}/ingressar`, incomingData)
+      registarArtistaBlockChain(enderecoBlockChain, data.idEdicao, data.categoria)
+      toast(incomingResponse.data.message, { type: 'success', position: 'bottom-right' })
+      return roteador.reload()
+    } catch (err: any) {
+      console.log(err)
+      if (err.name === 'AxiosError') {
+        toast(err.response.data.message, { type: 'error', position: 'bottom-right' })
+        return
+      }
+    }
+  }
+
+  function closeModal(type: 'normal' | 'edit' | 'delete') {
+    switch (type) {
+      case 'normal':
+        setIsOpen(false)
+        break
+      case 'edit':
+        setIsOpenEdit(false)
+        break
+      case 'delete':
+        setIsOpenDelete(false)
+        break
+    }
+  }
+
+  function openModal(type: 'normal' | 'edit' | 'delete', edicao?: any) {
+    switch (type) {
+      case 'normal':
+        setIsOpen(true)
+        break
+      case 'edit':
+        setIsOpenEdit(true)
+        setSelectedEdicao(edicao)
+        break
+      case 'delete':
+        setIsOpenDelete(true)
+        setSelectedEdicao(edicao)
+        break
+    }
+  }
+
+
+  return (
+    <div className="w-full mt-12">
+      {
+        isLoading ? (<h1>Por favor aguarde</h1>) : (
+          <div className="overflow-x-auto">
+            <div className="w-full inline-block min-w-full">
+              <table className="w-full divide-y divide-gray-200 border-b">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-3 text-left font-bold text-md  text-gray-800 tracking-wider">
+                      Nome da Edição
+                    </th>
+                    <th className="px-6 py-3 text-left font-bold text-md  text-gray-800 tracking-wider">
+                      Data começo
+                    </th>
+                    <th className="px-6 py-3 text-left font-bold text-md  text-gray-800 tracking-wider">
+                      Data Término
+                    </th>
+                    <th className="px-6 py-3 text-left font-bold text-md  text-gray-800 tracking-wider">
+                      Categorias
+                    </th>
+                    <th className="px-6 py-3 text-left font-bold text-md  text-gray-800 tracking-wider">
+                      Capa do evento
+                    </th>
+                    <th className="px-6 py-3 text-left font-bold text-md  text-gray-800 tracking-wider">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {
+                    data.data.map((edicao: any) => (
+                      <tr key={edicao.idEdicao}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-16 flex items-center">
+                            <Link className='underline' href={`/panel/admin/edicoes/${edicao.idEdicao}`}>{edicao.nomeEdicao}</Link>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-16 flex items-center">{new Date(edicao.dataComeco).toLocaleString('pt', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-16 flex items-center">{new Date(edicao.dataTermino).toLocaleString('pt', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-16 flex items-center">{edicao.categoria.map((categoria: any) => (categoria.nomeCategoria)).toString()}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-16 flex items-center">
+                            <Link href={`http://localhost:3000/${showPath(edicao.capa)}`} className='underline'>Clique aqui para ver</Link>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className='w-full flex flex-row gap-2 items-center justify-center'>
+                            <button className="rounded-none bg-indigo-600 p-2 text-white mb-8 font-bold" onClick={() => openModal('edit', edicao)}>Participar</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div className='mx-auto gap-6 p-2 mt-2 flex flex-row items-center justify-center'>
+              <p>Total elementos: {data.paginator.totalCurrentResults}</p>
+              <div className='flex flex-row items-center gap-2 justify-center'>
+                <AiOutlineArrowLeft className='cursor-pointer' onClick={() => setPagina((pagina > 0) ? pagina - 1 : 0)} />
+                <input type="number" className='border p-2 outline-none' min={0} defaultValue={10} onChange={(e) => setPorPagina(+e.target.value)} />
+                <AiOutlineArrowRight className='cursor-pointer' onClick={() => setPagina(pagina + 1)} />
+              </div>
+              <p>Página: {pagina}</p>
+            </div>
+          </div>
+        )
+      }
+
+      <Transition appear show={isOpenEdit} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal('edit')}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Participar da edição {selectedEdicao != null ? selectedEdicao.nomeEdicao : null}
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                    Seleccione uma categoria
+                    </p>
+                  </div>
+                  { 
+                    (Object.keys(selectedEdicao).length > 0) ? selectedEdicao.categoria.map((cat: any) => (
+                      <span onClick={() => setSelectedCategoria(cat)} key={cat.idCategoria} className="inline-flex items-center mr-2 mt-4 rounded-md bg-gray-50 p-4 cursor-pointer text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">{cat.nomeCategoria}</span> 
+                    )) : null
+                  }
+                  {
+                    (Object.keys(selectedCategoria).length > 0) ? (
+                    <div className='w-full mt-4 flex flex-col gap-4'>
+                      <input onChange={handleChange} type='text' name='titulo' placeholder='Título da música' value={participacao.titulo} className="border-2 w-full border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500" />
+                      <input onChange={handleChange} type='text' name='link_musica' placeholder='Link da música' value={participacao.link_musica} className="border-2 w-full border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500" />
+                      <input onChange={handleChange} type='text' name='ano_gravacao' placeholder='Ano de gravação da música' value={participacao.ano_gravacao} className="border-2 w-full border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500" />
+                      <input onChange={handleChange} type='text' name='nomeGenero' placeholder='Género da música' value={participacao.nomeGenero} className="border-2 w-full border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500" />
+                      <button onClick={participar} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Participar</button>
+                    </div>
+                    ) : null
+                  }
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </div>
+  );
+};
+
 
 
 

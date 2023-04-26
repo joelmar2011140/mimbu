@@ -65,7 +65,7 @@ export default function DashboardSingleEdicaoPage({ edicao }: any) {
     async function fetchVotosCategoria() {
       const votos = await Promise.all(
         edicao.categoria.map(async (cat:any) => {
-          const totalVotos = await votosCategriaEdicao(edicao.nomeEdicao, cat.nomeCategoria)
+          const totalVotos = await votosCategriaEdicao(edicao.idEdicao, cat.nomeCategoria)
           return { id: cat.idCategoria, totalVotos }
         })
       )

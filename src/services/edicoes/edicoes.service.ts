@@ -9,7 +9,7 @@ import { prismaCategorias } from "../categorias/categorias.prisma";
 import { deleteFile } from "@/utils/utils.functions";
 
 export async function listarEdicoes(pagina: number, porPagina: number, sq?: string): Promise<IResultPaginated> {
-  const edicoes = await prismaEdicao.findMany({ include: { categoria: { select: { nomeCategoria: true } } } })
+  const edicoes = await prismaEdicao.findMany({ include: { categoria: { select: { nomeCategoria: true, idCategoria: true } } } })
   const listaDeEdicoes = (sq != null) ? resultadoPaginado(pesquisar(edicoes, sq, ['categorias.nomeCategoria', 'nomeEdicao']), pagina, porPagina) : resultadoPaginado(edicoes, pagina, porPagina)
   return listaDeEdicoes
 }
