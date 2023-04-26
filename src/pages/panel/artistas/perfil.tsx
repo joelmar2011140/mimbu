@@ -87,45 +87,44 @@ export default function PerfilArtistaPage({ artista }: any) {
         <dl>
             <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">
-                    Full name
+                    Nome artístico
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    Mickael Poulaz
+                { artista.nomeArtistico }
                 </dd>
             </div>
             <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">
-                    Best techno
+                    Género
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    React JS
+                { artista.genero }
                 </dd>
             </div>
             <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">
-                    Email address
+                    Email 
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    m.poul@example.com
+                { artista.email }
                 </dd>
             </div>
             <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">
-                    Salary
+                    Telefone
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    $10,000
+                { artista.telefone }
                 </dd>
             </div>
             <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">
-                    About
+                    Data de nascimento
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    To get social media testimonials like these, keep your customers engaged with your social media accounts by posting regularly yourself
+                    {new Date(artista.dataNascimento).toLocaleString('pt', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </dd>
             </div>
-            <button>heuy</button>
         </dl>
     </div>
 </div>

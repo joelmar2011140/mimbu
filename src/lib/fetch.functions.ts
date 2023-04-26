@@ -6,6 +6,12 @@ export async function fetchEdicoes() {
   return data.data
 }
 
+export async function fetchArtistas() {
+  const raw = await fetch('http://localhost:3000/api/artistas')
+  const data = await raw.json()
+  return data.data
+}
+
 export async function fetchEdicoesUser() {
   const raw = await fetch('http://localhost:3000/api/edicoes')
   const agora = moment()
@@ -74,6 +80,12 @@ export async function fetchNoticiasParam(pagina: number, porPagina: number, sq?:
   const raw = await fetch(`/api/noticias?pagina=${pagina}&porPagina=${porPagina}`)
   const data = await raw.json()
   return data
+}
+
+export async function fetchNoticias() {
+  const raw = await fetch(`http:/localhost:3000/api/noticias`)
+  const data = await raw.json()
+  return data.data
 }
 
 export async function fetchEdicao(idEdicao: string) {
